@@ -1,6 +1,7 @@
 package controllers
 
 import models.Album
+import models.Image
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.DriverManager
@@ -36,6 +37,27 @@ object SqliteController{
     val MASTER_TABLE = "RKMaster"
     var ALBUM_VERSION_TABLE = "RKAlbumVersion"
     var DATABASE_FILENAME = "data/Library.apdb"
+
+
+    fun getConnection(): Connection? {
+        val classLoader = javaClass.classLoader
+        val file = File(classLoader.getResource(DATABASE_FILENAME)!!.file)
+        val databasePath: String = file.toString()
+
+
+        var conn: Connection? = null
+        try {
+            // db parameters
+            val url = "jdbc:sqlite:" + databasePath
+            // create a connection to the database
+            conn = DriverManager.getConnection(url)
+
+            return conn
+
+        } catch (e: Exception) {
+            return conn
+        }
+    }
 
     fun connect() {
         val classLoader = javaClass.classLoader
@@ -105,5 +127,23 @@ object SqliteController{
             }
 
         }
+    }
+
+    fun imagesForAlbum(albumId: String): MutableList<Image>{
+        val images: MutableList<Image> = mutableListOf()
+        val conn = getConnection() ?: return images
+
+        val sql = "SELECT modelId, imagePath from RKMaster where modelId in (select masterid from ${VERSION_TABLE} where modelId in (select versionid from ${ALBUM_VERSION_TABLE} where albumId = ?))"
+
+        val stmt  = conn.prepareStatement(sql)
+        stmt.setString(1, albumId)
+        val rs    = stmt.executeQuery()
+
+        while (rs.next()) {
+            images.add(Image(rs.getString("modelId"), rs.getString("imagePath")))
+        }
+
+        return images
+
     }
 }

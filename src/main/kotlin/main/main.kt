@@ -32,4 +32,5 @@ fun main(args : Array<String>) {
     get("/user/:first/:last/json", { req, res -> User(req.params(":first"), req.params(":last")) }, { gson.toJson(it) })
 
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
+    get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 }
