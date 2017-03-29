@@ -36,3 +36,4 @@
 *.apdb
 
 build/*
+example.log*
