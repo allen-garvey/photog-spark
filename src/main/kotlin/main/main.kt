@@ -14,7 +14,15 @@ import java.util.*
 fun main(args : Array<String>) {
     port(3000)
 
-    staticFiles.location("/public");
+    staticFiles.location("/public")
+
+    //allow routes to match with trailing slash
+    before({ req, res ->
+        val path = req.pathInfo()
+        if (path.endsWith("/")){
+            res.redirect(path.substring(0, path.length - 1))
+        }
+    })
 
     //gzip everything
     after({req, res ->
