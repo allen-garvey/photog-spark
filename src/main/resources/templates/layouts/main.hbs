@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>{{#block "title" }}Spark Kotlin Example{{/block}}</title>
+        <meta name="description" content="{{#block "description" }}Spark Kotlin example site{{/block}}"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" type="text/css" href="/styles/style.css"/>
+    </head>
+    <body>
+        {{#block "header" }}
+            {{> partials/header.hbs }}
+        {{/block}}
+        <div class="container">
+            {{#block "body" }}{{/block}}
+        </div>
+        {{#block "footer" }}
+            {{> partials/footer.hbs }}
+        {{/block}}
+    </body>
+</html>
