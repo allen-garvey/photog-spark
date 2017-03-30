@@ -3,7 +3,7 @@
     <ul class="thumbnail-list">
         {{#each images}}
             <li>
-                <img src="{{urlForImage this}}" alt=""/>
+                <a href="{{urlForImage this}}"><img src="{{urlForThumbnail this.thumbnail}}" alt=""/></a>
             </li>
         {{/each}}
     </ul>

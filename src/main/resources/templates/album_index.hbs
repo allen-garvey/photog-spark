@@ -3,7 +3,7 @@
         {{#each albums}}
             <li>
                 <h3><a href="{{urlForAlbum this}}">{{this.name}}</a></h3>
-                <a href="{{urlForAlbum this}}"><img src="{{urlForImage this.coverImage}}" alt=""/></a>
+                <a href="{{urlForAlbum this}}"><img src="{{urlForThumbnail this.coverImage.thumbnail}}" alt=""/></a>
             </li>
         {{/each}}
     </ul>

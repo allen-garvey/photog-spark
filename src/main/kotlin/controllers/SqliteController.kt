@@ -2,6 +2,7 @@ package controllers
 
 import models.Album
 import models.Image
+import models.Thumbnail
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.DriverManager
@@ -39,14 +40,22 @@ object SqliteController{
     val ALBUM_TABLE = "RKAlbum"
     val VERSION_TABLE = "RKVersion"
     val MASTER_TABLE = "RKMaster"
-    var ALBUM_VERSION_TABLE = "RKAlbumVersion"
-    var DATABASE_FILENAME = "data/Library.apdb"
+    val ALBUM_VERSION_TABLE = "RKAlbumVersion"
+    val THUMBNAIL_TABLE = "RKImageProxyState"
+    val DATABASE_FOLDER = "data"
+    val DATABASE_FILENAME_LIBRARY = "Library.apdb"
+    val DATABASE_FILENAME_THUMBNAILS = "ImageProxies.apdb"
 
-
-    fun getConnection(): Connection? {
+    fun databasePathFor(databaseFilename: String): String{
         val classLoader = javaClass.classLoader
-        val file = File(classLoader.getResource(DATABASE_FILENAME)!!.file)
-        val databasePath: String = file.toString()
+        println("data" + File.pathSeparator + databaseFilename)
+        val file = File(classLoader.getResource(DATABASE_FOLDER + File.separator + databaseFilename)!!.file)
+        return file.toString()
+    }
+
+
+    fun getConnection(databaseFilename: String): Connection? {
+        val databasePath: String = databasePathFor(databaseFilename)
 
         try {
             // db parameters
@@ -60,8 +69,8 @@ object SqliteController{
         }
     }
 
-    fun executeOperation(databaseOperation: (Connection)-> Unit) {
-        val conn: Connection = getConnection() ?: return
+    fun executeOperation(databaseFilename: String, databaseOperation: (Connection)-> Unit) {
+        val conn: Connection = getConnection(databaseFilename) ?: return
         try {
             databaseOperation(conn)
         }
@@ -80,14 +89,30 @@ object SqliteController{
 
     fun selectAllAlbums() : MutableList<Album> {
         val albums : MutableList<Album> = mutableListOf()
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
 
-        executeOperation { it ->
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_path"))))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null)))
+            }
+        })
+
+        val thumbnailSql = "SELECT minithumbnailpath, thumbnailpath FROM ${THUMBNAIL_TABLE} WHERE versionId = ?"
+
+        albums.forEach {
+            val album = it
+            if(album.coverImage != null) {
+                executeOperation(DATABASE_FILENAME_THUMBNAILS, { it ->
+                    val stmt = it.prepareStatement(thumbnailSql)
+                    stmt.setString(1, album.coverImage.versionId)
+                    val rs = stmt.executeQuery()
+                    while (rs.next()) {
+                        album.coverImage.thumbnail = Thumbnail(rs.getString("thumbnailpath"), rs.getString("minithumbnailpath"))
+                    }
+                })
             }
         }
 
@@ -97,29 +122,46 @@ object SqliteController{
     fun selectAlbum(albumId: String): Album{
         var album = Album("", "", null)
         val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name from ${ALBUM_TABLE} where album_id = ?"
-        executeOperation { it ->
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
                 album = Album(rs.getString("album_id"), rs.getString("album_name"), null)
             }
-        }
+        })
         return album
     }
 
     fun imagesForAlbum(albumId: String): MutableList<Image>{
         val images: MutableList<Image> = mutableListOf()
-        val sql = "SELECT modelId, imagePath from ${MASTER_TABLE} where modelId in (select masterid from ${VERSION_TABLE} where modelId in (select versionid from ${ALBUM_VERSION_TABLE} where albumId = ?))"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${ALBUM_VERSION_TABLE}.albumId = ?"
 
-        executeOperation { it ->
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                images.add(Image(rs.getString("modelId"), rs.getString("imagePath")))
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), null))
             }
+        })
+
+        val thumbnailSql = "SELECT minithumbnailpath, thumbnailpath FROM ${THUMBNAIL_TABLE} WHERE versionId = ?"
+
+        images.forEach {
+            val image = it
+
+            executeOperation(DATABASE_FILENAME_THUMBNAILS, { it ->
+                val stmt = it.prepareStatement(thumbnailSql)
+                stmt.setString(1, image.versionId)
+                val rs = stmt.executeQuery()
+                while (rs.next()) {
+                    image.thumbnail = Thumbnail(rs.getString("thumbnailpath"), rs.getString("minithumbnailpath"))
+                }
+            })
         }
+
+
         return images
     }
 }
