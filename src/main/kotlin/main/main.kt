@@ -10,6 +10,10 @@ import models.User
 import spark.ModelAndView
 import spark.template.handlebars.HandlebarsTemplateEngine
 import java.util.*
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
+
+
 
 fun main(args : Array<String>) {
     port(3000)
@@ -30,7 +34,9 @@ fun main(args : Array<String>) {
     })
 
     //used to parse and convert JSON
-    val gson = Gson()
+    val gson = GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create()
     val templateEngine = HandlebarsTemplateEngine()
 
 //    SqliteController.selectAllAlbums()
