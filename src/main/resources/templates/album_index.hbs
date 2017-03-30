@@ -1,9 +1,9 @@
 {{#partial "body"}}
-    <ul class="album-list">
+    <ul class="album-list thumbnail-list">
         {{#each albums}}
             <li>
-                <img src="{{urlForImage this.coverImage}}" alt=""/>
-                <h3>{{this.name}}</h3>
+                <h3><a href="{{urlForAlbum this}}">{{this.name}}</a></h3>
+                <a href="{{urlForAlbum this}}"><img src="{{urlForImage this.coverImage}}" alt=""/></a>
             </li>
         {{/each}}
     </ul>
