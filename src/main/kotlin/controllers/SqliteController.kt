@@ -29,6 +29,7 @@ select imagePath from RKMaster where modelId in (select masterid from RKVersion 
 
 -- select all albums
 select name from RKAlbum where name is not null and name != "" order by modelId desc;
+select rkalbum.modelId, rkalbum.name, rkmaster.modelid, rkmaster.imagepath from RKAlbum inner join rkversion on rkalbum.posterversionuuid = rkversion.uuid inner join rkmaster on rkversion.masterid = rkmaster.modelId where rkalbum.name is not null and rkalbum.name != "" order by rkalbum.modelId desc;
 
 --select cover photo for album
 select modelid, imagepath from rkmaster where modelid in (select masterid from rkversion where uuid in (select posterversionuuid from rkalbum where modelid = "3571"));
@@ -79,14 +80,14 @@ object SqliteController{
 
     fun selectAllAlbums() : MutableList<Album> {
         val albums : MutableList<Album> = mutableListOf()
-        val sql = "SELECT modelId, name from ${ALBUM_TABLE} where name is not null and name != \"\" order by modelId desc"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
 
         executeOperation { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("modelId"), rs.getString("name")))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_path"))))
             }
         }
 
