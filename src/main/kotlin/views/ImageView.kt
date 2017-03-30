@@ -9,7 +9,7 @@ import models.Image
 class ImageView{
     fun urlForImage(image: Image?): String{
         if(image != null){
-            return "http://google.com/" + image.path
+            return "http://photog.alaska.dev/media/images/" + image.path
         }
         return ""
     }
