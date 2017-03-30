@@ -47,43 +47,29 @@ object SqliteController{
         val file = File(classLoader.getResource(DATABASE_FILENAME)!!.file)
         val databasePath: String = file.toString()
 
-
-        var conn: Connection? = null
         try {
             // db parameters
             val url = "jdbc:sqlite:" + databasePath
             // create a connection to the database
-            conn = DriverManager.getConnection(url)
-
+            val conn = DriverManager.getConnection(url)
             return conn
-
         } catch (e: Exception) {
-            return conn
+            println(e.message)
+            return null
         }
     }
 
-    fun connect() {
-        val classLoader = javaClass.classLoader
-        val file = File(classLoader.getResource(DATABASE_FILENAME)!!.file)
-        val databasePath: String = file.toString()
-
-
-        var conn: Connection? = null
+    fun executeOperation(databaseOperation: (Connection)-> Unit) {
+        val conn: Connection = getConnection() ?: return
         try {
-            // db parameters
-            val url = "jdbc:sqlite:" + databasePath
-            // create a connection to the database
-            conn = DriverManager.getConnection(url)
-
-            println("Connection to SQLite has been established.")
-
-        } catch (e: SQLException) {
+            databaseOperation(conn)
+        }
+        catch (e: SQLException) {
             println(e.message)
-        } finally {
+        }
+        finally {
             try {
-                if (conn != null) {
-                    conn!!.close()
-                }
+                conn.close()
             } catch (ex: SQLException) {
                 println(ex.message)
             }
@@ -93,16 +79,15 @@ object SqliteController{
 
     fun selectAllAlbums() : MutableList<Album> {
         val albums : MutableList<Album> = mutableListOf()
-
-        val conn = getConnection() ?: return albums
-
         val sql = "SELECT modelId, name from ${ALBUM_TABLE} where name is not null and name != \"\" order by modelId desc"
-        val stmt  = conn.createStatement()
-        val rs    = stmt.executeQuery(sql)
 
-        // loop through the result set
-        while (rs.next()) {
-            albums.add(Album(rs.getString("modelId"), rs.getString("name")))
+        executeOperation { it ->
+            val stmt  = it.createStatement()
+            val rs    = stmt.executeQuery(sql)
+
+            while (rs.next()) {
+                albums.add(Album(rs.getString("modelId"), rs.getString("name")))
+            }
         }
 
         return albums
@@ -110,21 +95,16 @@ object SqliteController{
 
     fun imagesForAlbum(albumId: String): MutableList<Image>{
         val images: MutableList<Image> = mutableListOf()
-        val conn = getConnection() ?: return images
+        val sql = "SELECT modelId, imagePath from ${MASTER_TABLE} where modelId in (select masterid from ${VERSION_TABLE} where modelId in (select versionid from ${ALBUM_VERSION_TABLE} where albumId = ?))"
 
-        val sql = "SELECT modelId, imagePath from RKMaster where modelId in (select masterid from ${VERSION_TABLE} where modelId in (select versionid from ${ALBUM_VERSION_TABLE} where albumId = ?))"
-
-        val stmt  = conn.prepareStatement(sql)
-        stmt.setString(1, albumId)
-        val rs    = stmt.executeQuery()
-
-        while (rs.next()) {
-            images.add(Image(rs.getString("modelId"), rs.getString("imagePath")))
+        executeOperation { it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, albumId)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                images.add(Image(rs.getString("modelId"), rs.getString("imagePath")))
+            }
         }
-
-        conn.close()
-
         return images
-
     }
 }
