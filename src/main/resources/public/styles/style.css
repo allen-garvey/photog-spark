@@ -1,4 +1,18 @@
+body{
+    font-family: sans-serif;
+}
+img{
+    max-width: 100%;
+}
 .container{
-    max-width: 40em;
+    max-width: 1200px;
     margin: 0 auto;
+}
+.thumbnail-list{
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+.thumbnail-list li{
+    flex-basis: 25%;
 }
