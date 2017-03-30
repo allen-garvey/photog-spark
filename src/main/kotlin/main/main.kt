@@ -9,6 +9,7 @@ import spark.ModelAndView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import spark.Filter
+import views.AlbumView
 import views.CustomHandlebarsTemplateEngine
 import views.ImageView
 
@@ -38,9 +39,12 @@ fun main(args : Array<String>) {
 
     val templateEngine = CustomHandlebarsTemplateEngine()
     templateEngine.registerHelpers(ImageView())
+    templateEngine.registerHelpers(AlbumView())
 
 
     get("/", { req, res -> ModelAndView(hashMapOf(Pair("albums", SqliteController.selectAllAlbums())), "album_index.hbs")  }, templateEngine)
+    get("/albums/:id", { req, res -> ModelAndView(hashMapOf(Pair("images", SqliteController.imagesForAlbum(req.params(":id"))), Pair("album", SqliteController.selectAlbum(req.params(":id")))), "album_show.hbs")  }, templateEngine)
+
     get("/hello/:name", { req, res -> ModelAndView(hashMapOf(Pair("name", req.params(":name"))), "index.hbs")  }, templateEngine)
 
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
