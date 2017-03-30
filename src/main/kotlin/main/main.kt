@@ -4,14 +4,13 @@ package main
  * Created by allen on 7/28/16.
  */
 import spark.Spark.*
-import com.google.gson.Gson
 import controllers.SqliteController
 import spark.ModelAndView
-import spark.template.handlebars.HandlebarsTemplateEngine
-import java.util.*
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-
+import spark.Filter
+import views.CustomHandlebarsTemplateEngine
+import views.ImageView
 
 
 fun main(args : Array<String>) {
@@ -20,27 +19,28 @@ fun main(args : Array<String>) {
     staticFiles.location("/public")
 
     //allow routes to match with trailing slash
-    before({ req, res ->
+    before(Filter({ req, res ->
         val path = req.pathInfo()
-        if (path.endsWith("/")){
+        if (!path.equals("/") && path.endsWith("/")){
             res.redirect(path.substring(0, path.length - 1))
         }
-    })
+    }))
 
     //gzip everything
-    after({req, res ->
+    after(Filter({req, res ->
         res.header("Content-Encoding", "gzip")
-    })
+    }))
 
     //used to parse and convert JSON
     val gson = GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
-    val templateEngine = HandlebarsTemplateEngine()
 
-//    SqliteController.selectAllAlbums()
+    val templateEngine = CustomHandlebarsTemplateEngine()
+    templateEngine.registerHelpers(ImageView())
 
-    get("/", { req, res -> ModelAndView(hashMapOf(Pair("name", "Test")), "index.hbs")  }, templateEngine)
+
+    get("/", { req, res -> ModelAndView(hashMapOf(Pair("albums", SqliteController.selectAllAlbums())), "album_index.hbs")  }, templateEngine)
     get("/hello/:name", { req, res -> ModelAndView(hashMapOf(Pair("name", req.params(":name"))), "index.hbs")  }, templateEngine)
 
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })

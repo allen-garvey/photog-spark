@@ -1,0 +1,13 @@
+{{#partial "body"}}
+    <ul class="album-list">
+        {{#each albums}}
+            <li>
+                <img src="{{urlForImage this.coverImage}}" alt=""/>
+                <h3>{{this.name}}</h3>
+            </li>
+        {{/each}}
+    </ul>
+{{/partial}}
+
+{{> layouts/main.hbs }}
+
