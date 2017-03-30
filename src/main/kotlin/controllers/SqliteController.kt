@@ -29,6 +29,9 @@ select imagePath from RKMaster where modelId in (select masterid from RKVersion 
 
 -- select all albums
 select name from RKAlbum where name is not null and name != "" order by modelId desc;
+
+--select cover photo for album
+select modelid, imagepath from rkmaster where modelid in (select masterid from rkversion where uuid in (select posterversionuuid from rkalbum where modelid = "3571"));
 * */
 
 object SqliteController{
@@ -142,6 +145,8 @@ object SqliteController{
         while (rs.next()) {
             images.add(Image(rs.getString("modelId"), rs.getString("imagePath")))
         }
+
+        conn.close()
 
         return images
 
