@@ -94,6 +94,20 @@ object SqliteController{
         return albums
     }
 
+    fun selectAlbum(albumId: String): Album{
+        var album = Album("", "", null)
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name from ${ALBUM_TABLE} where album_id = ?"
+        executeOperation { it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, albumId)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                album = Album(rs.getString("album_id"), rs.getString("album_name"), null)
+            }
+        }
+        return album
+    }
+
     fun imagesForAlbum(albumId: String): MutableList<Image>{
         val images: MutableList<Image> = mutableListOf()
         val sql = "SELECT modelId, imagePath from ${MASTER_TABLE} where modelId in (select masterid from ${VERSION_TABLE} where modelId in (select versionid from ${ALBUM_VERSION_TABLE} where albumId = ?))"
