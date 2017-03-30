@@ -6,7 +6,6 @@ package main
 import spark.Spark.*
 import com.google.gson.Gson
 import controllers.SqliteController
-import models.User
 import spark.ModelAndView
 import spark.template.handlebars.HandlebarsTemplateEngine
 import java.util.*
@@ -43,7 +42,6 @@ fun main(args : Array<String>) {
 
     get("/", { req, res -> ModelAndView(hashMapOf(Pair("name", "Test")), "index.hbs")  }, templateEngine)
     get("/hello/:name", { req, res -> ModelAndView(hashMapOf(Pair("name", req.params(":name"))), "index.hbs")  }, templateEngine)
-    get("/user/:first/:last/json", { req, res -> User(req.params(":first"), req.params(":last")) }, { gson.toJson(it) })
 
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
