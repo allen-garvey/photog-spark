@@ -7,6 +7,17 @@
     <div class="image-show-link-container">
         <a href="{{urlForImageFull image}}">View full-size</a>
     </div>
+    <div class="image-show-albums">
+        <h3 class="subsection-title">Albums</h3>
+        <ul class="image-show-album-list">
+            {{#each albums}}
+                <li class="image-container">
+                    <a href="{{urlForAlbum this}}">{{this.name}}</a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
+
 {{/partial}}
 
 {{> layouts/main.hbs }}
