@@ -50,11 +50,10 @@ object SqliteController{
 
     fun databasePathFor(databaseFilename: String): String{
         if(databaseRoot != null){
-            return databaseRoot + File.separator + databaseFilename
+            return File(databaseRoot, databaseFilename).toString()
         }
         val classLoader = javaClass.classLoader
-        val file = File(classLoader.getResource(DATABASE_FOLDER + File.separator + databaseFilename)!!.file)
-        return file.toString()
+        return File(classLoader.getResource(File(DATABASE_FOLDER, databaseFilename).toString())!!.file).toString()
     }
 
 
