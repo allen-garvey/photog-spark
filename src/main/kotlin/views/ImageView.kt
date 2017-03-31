@@ -17,7 +17,8 @@ class ImageView{
 
     fun urlForThumbnail(thumbnail: Thumbnail?): String{
         if(thumbnail != null){
-            return "http://photog.alaska.dev/media/thumbnails/" + thumbnail.miniThumbnailPath
+            //some thumbnail paths contain '%'
+            return "http://photog.alaska.dev/media/thumbnails/" + thumbnail.miniThumbnailPath.replace("%", "%25")
         }
         return ""
     }
