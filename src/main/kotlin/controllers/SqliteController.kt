@@ -122,6 +122,7 @@ object SqliteController{
         return albums
     }
 
+
     fun selectAlbum(albumId: String): Album{
         var album = Album("", "", null)
         val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name from ${ALBUM_TABLE} where album_id = ?"
@@ -149,22 +150,43 @@ object SqliteController{
             }
         })
 
-        val thumbnailSql = "SELECT minithumbnailpath, thumbnailpath FROM ${THUMBNAIL_TABLE} WHERE versionId = ?"
-
         images.forEach {
-            val image = it
-
-            executeOperation(DATABASE_FILENAME_THUMBNAILS, { it ->
-                val stmt = it.prepareStatement(thumbnailSql)
-                stmt.setString(1, image.versionId)
-                val rs = stmt.executeQuery()
-                while (rs.next()) {
-                    image.thumbnail = Thumbnail(rs.getString("thumbnailpath"), rs.getString("minithumbnailpath"))
-                }
-            })
+            it.thumbnail = thumbnailForImage(it)
         }
 
-
         return images
+    }
+
+    fun thumbnailForImage(image: Image): Thumbnail{
+        var thumbnail: Thumbnail = Thumbnail("", "")
+        val thumbnailSql = "SELECT minithumbnailpath, thumbnailpath FROM ${THUMBNAIL_TABLE} WHERE versionId = ?"
+
+        executeOperation(DATABASE_FILENAME_THUMBNAILS, { it ->
+            val stmt = it.prepareStatement(thumbnailSql)
+            stmt.setString(1, image.versionId)
+            val rs = stmt.executeQuery()
+            while (rs.next()) {
+                thumbnail = Thumbnail(rs.getString("thumbnailpath"), rs.getString("minithumbnailpath"))
+            }
+        })
+        return thumbnail
+    }
+
+    fun selectImage(imageId: String): Image{
+        var image = Image("", "", "", null)
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, imageId)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), null)
+            }
+        })
+
+        image.thumbnail = thumbnailForImage(image)
+
+        return image
     }
 }
