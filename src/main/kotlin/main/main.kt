@@ -15,11 +15,25 @@ import views.ImageView
 
 
 fun main(args : Array<String>) {
+    var portNum: Int = 3000
+
     if(args.isNotEmpty()){
-        SqliteController.databaseRoot = args[0]
+        try{
+            val userPortNum: Int = Integer.parseInt(args[0])
+            if(userPortNum in 1..65534){
+                portNum = userPortNum
+            }
+        }
+        catch (e: NumberFormatException){
+            //don't do anything, since we will use default port
+        }
     }
 
-    port(3000)
+    if(args.size >= 2){
+        SqliteController.databaseRoot = args[1]
+    }
+
+    port(portNum)
 
     staticFiles.location("/public")
 
