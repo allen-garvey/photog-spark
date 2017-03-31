@@ -1,5 +1,15 @@
+/*
+* Base
+*/
+
 body{
     font-family: sans-serif;
+}
+
+ul{
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 0;
 }
 
 a:link{
@@ -16,12 +26,22 @@ img{
     max-width: 1200px;
     margin: 0 auto;
 }
+.main{
+    padding-bottom: 5rem;
+}
+.footer{
+    padding-bottom: 2rem;
+}
+
+
+
+/*
+* Album Index and show pages
+*/
 .thumbnail-list{
-    list-style-type: none;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    padding-left: 0;
 }
 
 .thumbnail-list li{
@@ -53,4 +73,11 @@ img{
     font-size: large;
     text-align: center;
     padding: 1em 0;
+}
+.image-show-album-list li{
+    margin-bottom: 0.5em;
+}
+
+.subsection-title{
+    margin-bottom: 7px;
 }
