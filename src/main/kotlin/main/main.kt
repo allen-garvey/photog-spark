@@ -31,6 +31,13 @@ fun main(args : Array<String>) {
         }
     }))
 
+    //set response type to json for api routes
+    after(Filter({req, res ->
+        if(req.pathInfo().startsWith("/api")){
+            res.type("application/json")
+        }
+    }))
+
     //gzip everything
     after(Filter({req, res ->
         res.header("Content-Encoding", "gzip")
