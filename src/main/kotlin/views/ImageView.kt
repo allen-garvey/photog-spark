@@ -7,18 +7,17 @@ import models.Thumbnail
  * Created by allen on 3/30/17.
  */
 
-class ImageView{
+class ImageView: BaseView(){
     fun urlForImage(image: Image?): String{
         if(image != null){
-            return "http://photog.alaska.dev/media/images/" + image.path
+            return "http://photog.alaska.dev/media/images/" + uriEncode(image.path)
         }
         return ""
     }
 
     fun urlForThumbnail(thumbnail: Thumbnail?): String{
         if(thumbnail != null){
-            //some thumbnail paths contain '%'
-            return "http://photog.alaska.dev/media/thumbnails/" + thumbnail.miniThumbnailPath.replace("%", "%25")
+            return "http://photog.alaska.dev/media/thumbnails/" + uriEncode(thumbnail.miniThumbnailPath)
         }
         return ""
     }
