@@ -15,6 +15,10 @@ import views.ImageView
 
 
 fun main(args : Array<String>) {
+    if(args.isNotEmpty()){
+        SqliteController.databaseRoot = args[0]
+    }
+
     port(3000)
 
     staticFiles.location("/public")
