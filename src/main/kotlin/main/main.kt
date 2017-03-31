@@ -55,8 +55,8 @@ fun main(args : Array<String>) {
 
     get("/", { req, res -> ModelAndView(hashMapOf(Pair("albums", SqliteController.selectAllAlbums())), "album_index.hbs")  }, templateEngine)
     get("/albums/:id", { req, res -> ModelAndView(hashMapOf(Pair("images", SqliteController.imagesForAlbum(req.params(":id"))), Pair("album", SqliteController.selectAlbum(req.params(":id")))), "album_show.hbs")  }, templateEngine)
+    get("/images/:id", { req, res -> ModelAndView(hashMapOf(Pair("image", SqliteController.selectImage(req.params(":id")))), "image_show.hbs")  }, templateEngine)
 
-    get("/hello/:name", { req, res -> ModelAndView(hashMapOf(Pair("name", req.params(":name"))), "index.hbs")  }, templateEngine)
 
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })

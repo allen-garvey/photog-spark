@@ -8,16 +8,30 @@ import models.Thumbnail
  */
 
 class ImageView: BaseView(){
-    fun urlForImage(image: Image?): String{
+    fun urlForImageFull(image: Image?): String{
         if(image != null){
             return "http://photog.alaska.dev/media/images/" + uriEncode(image.path)
         }
         return ""
     }
 
-    fun urlForThumbnail(thumbnail: Thumbnail?): String{
+    fun urlForThumbnailMini(thumbnail: Thumbnail?): String{
         if(thumbnail != null){
             return "http://photog.alaska.dev/media/thumbnails/" + uriEncode(thumbnail.miniThumbnailPath)
+        }
+        return ""
+    }
+
+    fun urlForThumbnail(thumbnail: Thumbnail?): String{
+        if(thumbnail != null){
+            return "http://photog.alaska.dev/media/thumbnails/" + uriEncode(thumbnail.thumbnailPath)
+        }
+        return ""
+    }
+
+    fun urlForImage(image: Image?): String{
+        if(image != null){
+            return "/images/" + image.id
         }
         return ""
     }

@@ -1,0 +1,13 @@
+{{#partial "body"}}
+    <div class="image-show-thumbnail-container">
+        <a href="{{urlForImageFull image}}">
+            <img src="{{urlForThumbnail image.thumbnail}}" alt=""/>
+        </a>
+    </div>
+    <div class="image-show-link-container">
+        <a href="{{urlForImageFull image}}">View full-size</a>
+    </div>
+{{/partial}}
+
+{{> layouts/main.hbs }}
+
