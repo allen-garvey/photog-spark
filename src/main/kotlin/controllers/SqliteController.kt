@@ -189,4 +189,20 @@ object SqliteController{
 
         return image
     }
+
+    fun albumsForImage(imageId: String): MutableList<Album>{
+        val albums: MutableList<Album> = mutableListOf()
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name FROM ${ALBUM_TABLE} WHERE album_id IN (SELECT albumId from ${ALBUM_VERSION_TABLE} WHERE versionId IN (SELECT modelId from ${VERSION_TABLE} WHERE masterId = ?))"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, imageId)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), null))
+            }
+        })
+
+        return albums
+    }
 }
