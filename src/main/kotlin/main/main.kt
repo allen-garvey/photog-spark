@@ -12,6 +12,7 @@ import spark.Filter
 import views.AlbumView
 import views.CustomHandlebarsTemplateEngine
 import views.ImageView
+import views.SiteView
 
 
 fun main(args : Array<String>) {
@@ -65,6 +66,7 @@ fun main(args : Array<String>) {
     val templateEngine = CustomHandlebarsTemplateEngine()
     templateEngine.registerHelpers(ImageView())
     templateEngine.registerHelpers(AlbumView())
+    templateEngine.registerHelpers(SiteView())
 
 
     get("/", { req, res -> ModelAndView(hashMapOf(Pair("albums", SqliteController.selectAllAlbums())), "album_index.hbs")  }, templateEngine)
