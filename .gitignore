@@ -33,6 +33,7 @@
 .directory
 .DS_Store
 
+# Mac Photos database
 *.apdb
 
 build/*

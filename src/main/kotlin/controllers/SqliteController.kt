@@ -46,14 +46,10 @@ object SqliteController{
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
     val DATABASE_FILENAME_THUMBNAILS = "ImageProxies.apdb"
 
-    var databaseRoot: String? = null
+    var databaseRoot: String = "/home/allen/Pictures/Mac-Photos-Database"
 
     fun databasePathFor(databaseFilename: String): String{
-        if(databaseRoot != null){
-            return File(databaseRoot, databaseFilename).toString()
-        }
-        val classLoader = javaClass.classLoader
-        return File(classLoader.getResource(File(DATABASE_FOLDER, databaseFilename).toString())!!.file).toString()
+        return File(databaseRoot, databaseFilename).toString()
     }
 
 

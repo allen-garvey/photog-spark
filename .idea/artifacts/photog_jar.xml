@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="photog:jar">
+  <artifact type="jar" build-on-make="true" name="photog:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/photog_jar</output-path>
     <root id="archive" name="photog.jar">
       <element id="directory" name="META-INF">
