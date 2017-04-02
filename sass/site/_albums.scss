@@ -1,0 +1,28 @@
+/*
+* Album Index and show pages
+*/
+.thumbnail-list{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.thumbnail-list li{
+    flex-basis: 205px;
+    margin-bottom: 25px;
+}
+.thumbnail-list .album-title{
+    min-height: 2em;
+    font-size: medium;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+.thumbnail-list .image-container{
+    height: 205px;
+    width: 205px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: dimgray;
+    display: flex;
+    align-items: center;
+}
