@@ -7,8 +7,10 @@
     justify-content: space-between;
 }
 
+$thumbnail_dimensions: 205px;
+
 .thumbnail-list li{
-    flex-basis: 205px;
+    flex-basis: $thumbnail_dimensions;
     margin-bottom: 25px;
 }
 .thumbnail-list .album-title{
@@ -18,8 +20,8 @@
     margin-bottom: 0;
 }
 .thumbnail-list .image-container{
-    height: 205px;
-    width: 205px;
+    height: $thumbnail_dimensions;
+    width: $thumbnail_dimensions;
     border-radius: 10px;
     overflow: hidden;
     background-color: dimgray;
