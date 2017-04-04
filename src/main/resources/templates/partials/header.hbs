@@ -1,1 +1,12 @@
-<header class="header container"><h1 class="brand"><a href="/">Photog</a></h1></header>
+<header class="header container">
+    <h1 class="brand"><a href="/">Photog</a></h1>
+    <nav class="nav">
+        <ul class="nav-list">
+            {{#each folders}}
+                <li>
+                    <a href="{{urlForFolder this}}">{{this.name}}</a>
+                </li>
+            {{/each}}
+        </ul>
+    </nav>
+</header>
