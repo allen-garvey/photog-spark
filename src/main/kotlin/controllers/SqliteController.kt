@@ -1,6 +1,7 @@
 package controllers
 
 import models.Album
+import models.Folder
 import models.Image
 import models.Thumbnail
 import java.sql.Connection
@@ -34,6 +35,11 @@ select rkalbum.modelId, rkalbum.name, rkmaster.modelid, rkmaster.imagepath from 
 
 --select cover photo for album
 select modelid, imagepath from rkmaster where modelid in (select masterid from rkversion where uuid in (select posterversionuuid from rkalbum where modelid = "3571"));
+
+
+--select folders
+select rkfolder.uuid, rkfolder.name from rkfolder where rkfolder.uuid in (select folderuuid from rkalbum where modelid in (select albumid from rkalbumversion)) and rkfolder.name is not "" order by rkfolder.name;
+
 * */
 
 object SqliteController{
@@ -42,6 +48,8 @@ object SqliteController{
     val MASTER_TABLE = "RKMaster"
     val ALBUM_VERSION_TABLE = "RKAlbumVersion"
     val THUMBNAIL_TABLE = "RKImageProxyState"
+    var FOLDER_TABLE = "RKFolder"
+
     val DATABASE_FOLDER = "data"
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
     val DATABASE_FILENAME_THUMBNAILS = "ImageProxies.apdb"
@@ -198,6 +206,55 @@ object SqliteController{
                 albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), null))
             }
         })
+
+        return albums
+    }
+
+    fun selectAllFolders() : MutableList<Folder> {
+        val folders : MutableList<Folder> = mutableListOf()
+        val sql = "SELECT ${FOLDER_TABLE}.uuid as folder_uuid, ${FOLDER_TABLE}.name as folder_name from ${FOLDER_TABLE} where ${FOLDER_TABLE}.uuid in (select folderuuid from ${ALBUM_TABLE} where modelid in (select albumid from ${ALBUM_VERSION_TABLE})) and ${FOLDER_TABLE}.name is not \"\" order by ${FOLDER_TABLE}.name"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
+            val stmt  = it.createStatement()
+            val rs    = stmt.executeQuery(sql)
+
+            while (rs.next()) {
+                folders.add(Folder(rs.getString("folder_uuid"), rs.getString("folder_name")))
+            }
+        })
+
+        return folders
+    }
+
+    fun albumsForFolder(folderUuid: String): MutableList<Album>{
+        val albums : MutableList<Album> = mutableListOf()
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" and ${ALBUM_TABLE}.folderUuid is ? order by ${ALBUM_TABLE}.modelId desc"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, folderUuid)
+            val rs    = stmt.executeQuery()
+
+            while (rs.next()) {
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null)))
+            }
+        })
+
+        val thumbnailSql = "SELECT minithumbnailpath, thumbnailpath FROM ${THUMBNAIL_TABLE} WHERE versionId = ?"
+
+        albums.forEach {
+            val album = it
+            if(album.coverImage != null) {
+                executeOperation(DATABASE_FILENAME_THUMBNAILS, { it ->
+                    val stmt = it.prepareStatement(thumbnailSql)
+                    stmt.setString(1, album.coverImage.versionId)
+                    val rs = stmt.executeQuery()
+                    while (rs.next()) {
+                        album.coverImage.thumbnail = Thumbnail(rs.getString("thumbnailpath"), rs.getString("minithumbnailpath"))
+                    }
+                })
+            }
+        }
 
         return albums
     }
