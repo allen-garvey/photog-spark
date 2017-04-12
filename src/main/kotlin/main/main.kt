@@ -74,7 +74,13 @@ fun main(args : Array<String>) {
     get("/images/:id", { req, res -> ModelAndView(hashMapOf(Pair("image", SqliteController.selectImage(req.params(":id"))), Pair("albums", SqliteController.albumsForImage(req.params(":id")))), "image_show.hbs")  }, templateEngine)
 
 
+    //API routes
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
     get("/api/folders", { req, res -> SqliteController.selectAllFolders() }, { gson.toJson(it) })
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
+
+    //Errors
+    //notFound((req, res) -> { "{\"message\":\"Custom 404\"}"; })
+
+    notFound { req, res -> templateEngine.render(ModelAndView(null, "404.hbs"))  }
 }
