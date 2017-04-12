@@ -127,8 +127,8 @@ object SqliteController{
     }
 
 
-    fun selectAlbum(albumId: String): Album{
-        var album = Album("", "", null)
+    fun selectAlbum(albumId: String): Album?{
+        var album: Album? = null
         val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name from ${ALBUM_TABLE} where album_id = ?"
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.prepareStatement(sql)
@@ -136,6 +136,7 @@ object SqliteController{
             val rs    = stmt.executeQuery()
             while (rs.next()) {
                 album = Album(rs.getString("album_id"), rs.getString("album_name"), null)
+                println("Album found")
             }
         })
         return album

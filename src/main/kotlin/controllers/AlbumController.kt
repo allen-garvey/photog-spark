@@ -16,7 +16,7 @@ object AlbumController{
     }
 
     fun show(request: Request, response: Response, albumIdParameterName: String): ModelAndView {
-        val album: Album = SqliteController.selectAlbum(request.params(albumIdParameterName))
+        val album: Album = SqliteController.selectAlbum(request.params(albumIdParameterName)) ?: return ErrorController.notFound(request, response)
         return ModelAndView(hashMapOf(Pair("folders", SqliteController.selectAllFolders()), Pair("images", SqliteController.imagesForAlbum(request.params(albumIdParameterName))), Pair("album", album)), "album_show.hbs")
     }
 }

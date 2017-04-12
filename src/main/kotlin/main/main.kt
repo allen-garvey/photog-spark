@@ -9,6 +9,7 @@ import spark.ModelAndView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.AlbumController
+import controllers.ErrorController
 import spark.Filter
 import views.*
 
@@ -81,7 +82,6 @@ fun main(args : Array<String>) {
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 
     //Errors
-    //notFound((req, res) -> { "{\"message\":\"Custom 404\"}"; })
+    notFound { req, res -> templateEngine.render(ErrorController.notFound(req, res))  }
 
-    notFound { req, res -> templateEngine.render(ModelAndView(null, "404.hbs"))  }
 }
