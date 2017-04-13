@@ -4,13 +4,10 @@ package main
  * Created by allen on 7/28/16.
  */
 import spark.Spark.*
-import controllers.SqliteController
 import spark.ModelAndView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import controllers.AlbumController
-import controllers.ErrorController
-import controllers.ImageController
+import controllers.*
 import spark.Filter
 import views.*
 
@@ -71,7 +68,7 @@ fun main(args : Array<String>) {
 
 
     get("/", { req, res -> AlbumController.index(req, res)  }, templateEngine)
-    get("/folders/:uuid", { req, res -> ModelAndView(hashMapOf(Pair("folders", SqliteController.selectAllFolders()), Pair("albums", SqliteController.albumsForFolder(req.params(":uuid")))), "album_index.hbs")  }, templateEngine)
+    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid")  }, templateEngine)
     get("/albums", { req, res -> AlbumController.index(req, res)  }, templateEngine)
     get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id")  }, templateEngine)
     get("/images/:id", { req, res -> ImageController.show(req, res, ":id")  }, templateEngine)

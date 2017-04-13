@@ -136,7 +136,6 @@ object SqliteController{
             val rs    = stmt.executeQuery()
             while (rs.next()) {
                 album = Album(rs.getString("album_id"), rs.getString("album_name"), null)
-                println("Album found")
             }
         })
         return album
@@ -210,6 +209,20 @@ object SqliteController{
         })
 
         return albums
+    }
+
+    fun selectFolder(folderUuid: String): Folder?{
+        var folder: Folder? = null
+        val sql = "SELECT ${FOLDER_TABLE}.uuid as folder_uuid, ${FOLDER_TABLE}.name as folder_name FROM ${FOLDER_TABLE} WHERE folder_uuid is ? AND  ${FOLDER_TABLE}.uuid in (SELECT folderuuid from ${ALBUM_TABLE} WHERE modelid in (select albumid from ${ALBUM_VERSION_TABLE})) and ${FOLDER_TABLE}.name is not \"\""
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, folderUuid)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                folder = Folder(rs.getString("folder_uuid"), rs.getString("folder_name"))
+            }
+        })
+        return folder
     }
 
     fun selectAllFolders() : MutableList<Folder> {
