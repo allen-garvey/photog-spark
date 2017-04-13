@@ -10,6 +10,7 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.AlbumController
 import controllers.ErrorController
+import controllers.ImageController
 import spark.Filter
 import views.*
 
@@ -73,7 +74,7 @@ fun main(args : Array<String>) {
     get("/folders/:uuid", { req, res -> ModelAndView(hashMapOf(Pair("folders", SqliteController.selectAllFolders()), Pair("albums", SqliteController.albumsForFolder(req.params(":uuid")))), "album_index.hbs")  }, templateEngine)
     get("/albums", { req, res -> AlbumController.index(req, res)  }, templateEngine)
     get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id")  }, templateEngine)
-    get("/images/:id", { req, res -> ModelAndView(hashMapOf(Pair("image", SqliteController.selectImage(req.params(":id"))), Pair("albums", SqliteController.albumsForImage(req.params(":id")))), "image_show.hbs")  }, templateEngine)
+    get("/images/:id", { req, res -> ImageController.show(req, res, ":id")  }, templateEngine)
 
 
     //API routes

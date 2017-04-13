@@ -177,8 +177,8 @@ object SqliteController{
         return thumbnail
     }
 
-    fun selectImage(imageId: String): Image{
-        var image = Image("", "", "", null)
+    fun selectImage(imageId: String): Image?{
+        var image: Image? = null
         val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
@@ -189,10 +189,11 @@ object SqliteController{
                 image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), null)
             }
         })
+        //compiler complains if we just check for null
+        val safeImage: Image = image ?: return null
+        safeImage.thumbnail = thumbnailForImage(safeImage)
 
-        image.thumbnail = thumbnailForImage(image)
-
-        return image
+        return safeImage
     }
 
     fun albumsForImage(imageId: String): MutableList<Album>{
