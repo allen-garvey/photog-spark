@@ -71,6 +71,8 @@ fun main(args : Array<String>) {
     get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid")  }, templateEngine)
     get("/albums", { req, res -> AlbumController.index(req, res)  }, templateEngine)
     get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id")  }, templateEngine)
+    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id")  }, templateEngine)
+
     get("/images/:id", { req, res -> ImageController.show(req, res, ":id")  }, templateEngine)
 
 
