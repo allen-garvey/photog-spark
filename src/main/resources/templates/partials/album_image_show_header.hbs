@@ -1,0 +1,13 @@
+<div class="album-image-header">
+    <a href="{{urlForAlbum parent_album}}">Back to {{parent_album.name}}</a>
+    <div class="album-image-nav">
+        {{#if previous_image}}
+            <a href="{{urlForAlbumImage parent_album previous_image}}">Previous</a>
+        {{else}}
+            <div></div>
+        {{/if}}
+        {{#if next_image}}
+            <a href="{{urlForAlbumImage parent_album next_image}}">Next</a>
+        {{/if}}
+    </div>
+</div>

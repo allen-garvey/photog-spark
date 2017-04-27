@@ -1,4 +1,7 @@
 {{#partial "body"}}
+    {{#if parent_album}}
+        {{> partials/album_image_show_header.hbs }}
+    {{/if}}
     <div class="image-show-thumbnail-container">
         <a href="{{urlForImageFull image}}">
             <img src="{{urlForThumbnail image.thumbnail}}" alt=""/>
