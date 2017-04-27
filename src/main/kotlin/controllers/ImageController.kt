@@ -30,6 +30,6 @@ object ImageController{
         val previousImage: Image? = if(imageIndex > 0) images.get(imageIndex - 1) else null
         val nextImage: Image? = if(imageIndex < images.size - 1) images.get(imageIndex + 1) else null
 
-        return ModelAndView(hashMapOf(Pair("image", image), Pair("parent_album", album), Pair("previous_image", previousImage), Pair("next_image", nextImage), Pair("albums", SqliteController.albumsForImage(request.params(imageIdParameterName)))), "image_show.hbs")
+        return ModelAndView(hashMapOf(Pair("image", image), Pair("images", images), Pair("parent_album", album), Pair("previous_image", previousImage), Pair("next_image", nextImage), Pair("albums", SqliteController.albumsForImage(request.params(imageIdParameterName)))), "image_show.hbs")
     }
 }

@@ -4,5 +4,29 @@
 .album-image-nav{
 	display: flex;
 	justify-content: space-between;
-	margin-top: 0.5em;
+	margin: 0.5em 0;
+}
+
+$preview_size: 50px;
+
+.album-image-nav-previews{
+	.image-preview-list{
+		display: flex;
+		justify-content: space-between;
+		li{
+			box-sizing: border-box;
+			height: $preview_size;
+			width: $preview_size;
+			// overflow: hidden;
+			&.current-image{
+				border: 3px solid magenta;
+			}
+			img{
+				height: 100%;
+				width: 100%;
+				max-width: none;
+				object-fit: cover;
+			}
+		}
+	}
 }

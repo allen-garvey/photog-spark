@@ -10,4 +10,17 @@
             <a href="{{urlForAlbumImage parent_album next_image}}">Next</a>
         {{/if}}
     </div>
+    <div class="album-image-nav-previews">
+        <ul class="image-preview-list">
+            {{#each images}}
+                {{#if (imageIsEqual image this)}}
+                    <li class="current-image">
+                {{else}}
+                    <li>
+                {{/if}}
+                    <a href="{{urlForAlbumImage parent_album this}}" class="preview-container"><img src="{{urlForThumbnailMini this.thumbnail}}" alt=""/></a>
+                </li>
+            {{/each}}
+        </ul>
+    </div>
 </div>

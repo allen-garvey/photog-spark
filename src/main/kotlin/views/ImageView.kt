@@ -35,4 +35,20 @@ class ImageView: BaseView(){
         }
         return ""
     }
+    //handlebars helper functions can only return a string, not boolean
+    //so we have to do some workarounds
+    fun imageIsEqual(image1: Image?, image2: Image?): String?{
+        if(image1 == null){
+            return null
+        }
+        if(image2 == null){
+            return null
+        }
+        if(image1.equals(image2)){
+            return "true"
+        }
+        else{
+            return null
+        }
+    }
 }
