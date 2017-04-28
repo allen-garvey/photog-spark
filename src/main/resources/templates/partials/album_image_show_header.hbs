@@ -14,11 +14,11 @@
         <ul class="image-preview-list">
             {{#each images}}
                 {{#if (imageIsEqual image this)}}
-                    <li class="current-image">
+                    <li class="current-image" id="{{idAttributeForAlbumImage this}}">
                 {{else}}
-                    <li>
+                    <li id="{{idAttributeForAlbumImage this}}">
                 {{/if}}
-                    <a href="{{urlForAlbumImage parent_album this}}" id="{{idAttributeForAlbumImage this}}" class="preview-container"><img src="{{urlForThumbnailMini this.thumbnail}}" alt=""/></a>
+                    <a href="{{urlForAlbumImage parent_album this}}" class="preview-container"><img src="{{urlForThumbnailMini this.thumbnail}}" alt=""/></a>
                 </li>
             {{/each}}
         </ul>
