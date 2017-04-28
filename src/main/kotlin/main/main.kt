@@ -9,49 +9,55 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.*
 import spark.Filter
+import spark.resource.ClassPathResource
 import views.*
+import java.io.File
 
 
-fun main(args : Array<String>) {
+fun main(args: Array<String>) {
     var portNum: Int = 3000
 
-    if(args.isNotEmpty()){
-        try{
+    if (args.isNotEmpty()) {
+        try {
             val userPortNum: Int = Integer.parseInt(args[0])
-            if(userPortNum in 1..65534){
+            if (userPortNum in 1..65534) {
                 portNum = userPortNum
             }
-        }
-        catch (e: NumberFormatException){
+        } catch (e: NumberFormatException) {
             //don't do anything, since we will use default port
         }
     }
 
-    if(args.size >= 2){
+    if (args.size >= 2) {
         SqliteController.databaseRoot = args[1]
     }
 
     port(portNum)
 
-    staticFiles.location("/public")
+    //live reload static files in development
+    if (args.isNotEmpty()) {
+        staticFiles.location("/public")
+    } else {
+        staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public")
+    }
 
     //allow routes to match with trailing slash
     before(Filter({ req, res ->
         val path = req.pathInfo()
-        if (!path.equals("/") && path.endsWith("/")){
+        if (!path.equals("/") && path.endsWith("/")) {
             res.redirect(path.substring(0, path.length - 1))
         }
     }))
 
     //set response type to json for api routes
-    after(Filter({req, res ->
-        if(req.pathInfo().startsWith("/api")){
+    after(Filter({ req, res ->
+        if (req.pathInfo().startsWith("/api")) {
             res.type("application/json")
         }
     }))
 
     //gzip everything
-    after(Filter({req, res ->
+    after(Filter({ req, res ->
         res.header("Content-Encoding", "gzip")
     }))
 
@@ -67,13 +73,13 @@ fun main(args : Array<String>) {
     templateEngine.registerHelpers(FolderView())
 
 
-    get("/", { req, res -> AlbumController.index(req, res)  }, templateEngine)
-    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid")  }, templateEngine)
-    get("/albums", { req, res -> AlbumController.index(req, res)  }, templateEngine)
-    get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id")  }, templateEngine)
-    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id")  }, templateEngine)
+    get("/", { req, res -> AlbumController.index(req, res) }, templateEngine)
+    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid") }, templateEngine)
+    get("/albums", { req, res -> AlbumController.index(req, res) }, templateEngine)
+    get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id") }, templateEngine)
+    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") }, templateEngine)
 
-    get("/images/:id", { req, res -> ImageController.show(req, res, ":id")  }, templateEngine)
+    get("/images/:id", { req, res -> ImageController.show(req, res, ":id") }, templateEngine)
 
 
     //API routes
@@ -82,6 +88,7 @@ fun main(args : Array<String>) {
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 
     //Errors
-    notFound { req, res -> templateEngine.render(ErrorController.notFound(req, res))  }
+    notFound { req, res -> templateEngine.render(ErrorController.notFound(req, res)) }
 
 }
+
