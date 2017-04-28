@@ -4,14 +4,11 @@ package main
  * Created by allen on 7/28/16.
  */
 import spark.Spark.*
-import spark.ModelAndView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.*
 import spark.Filter
-import spark.resource.ClassPathResource
 import views.*
-import java.io.File
 
 
 fun main(args: Array<String>) {
