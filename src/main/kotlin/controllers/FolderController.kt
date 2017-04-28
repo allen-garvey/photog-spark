@@ -4,6 +4,7 @@ import models.Folder
 import spark.ModelAndView
 import spark.Request
 import spark.Response
+import templates.AlbumTemplate
 
 
 /**
@@ -11,8 +12,8 @@ import spark.Response
  */
 
 object FolderController{
-    fun show(request: Request, response: Response, folderIdParameterName: String): ModelAndView {
-        val folder: Folder = SqliteController.selectFolder(request.params(folderIdParameterName)) ?: return ErrorController.notFound(request, response)
-        return ModelAndView(hashMapOf(Pair("folders", SqliteController.selectAllFolders()), Pair("albums", SqliteController.albumsForFolder(request.params(folderIdParameterName)))), "album_index.hbs")
+    fun show(request: Request, response: Response, folderIdParameterName: String): String {
+        val folder: Folder = SqliteController.selectFolder(request.params(folderIdParameterName)) ?: return ErrorController.notFoundPage(request, response)
+        return AlbumTemplate.index(SqliteController.selectAllFolders(), SqliteController.albumsForFolder(request.params(folderIdParameterName)), folder.name)
     }
 }

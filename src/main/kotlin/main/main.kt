@@ -8,7 +8,6 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.*
 import spark.Filter
-import views.*
 
 
 fun main(args: Array<String>) {
@@ -63,20 +62,14 @@ fun main(args: Array<String>) {
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create()
 
-    val templateEngine = CustomHandlebarsTemplateEngine()
-    templateEngine.registerHelpers(ImageView())
-    templateEngine.registerHelpers(AlbumView())
-    templateEngine.registerHelpers(SiteView())
-    templateEngine.registerHelpers(FolderView())
 
+    get("/", { req, res -> AlbumController.index(req, res) })
+    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid") })
+    get("/albums", { req, res -> AlbumController.index(req, res) })
+    get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id") })
+    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") })
 
-    get("/", { req, res -> AlbumController.index(req, res) }, templateEngine)
-    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid") }, templateEngine)
-    get("/albums", { req, res -> AlbumController.index(req, res) }, templateEngine)
-    get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id") }, templateEngine)
-    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") }, templateEngine)
-
-    get("/images/:id", { req, res -> ImageController.show(req, res, ":id") }, templateEngine)
+    get("/images/:id", { req, res -> ImageController.show(req, res, ":id") })
 
 
     //API routes
@@ -85,7 +78,6 @@ fun main(args: Array<String>) {
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 
     //Errors
-    notFound { req, res -> templateEngine.render(ErrorController.notFound(req, res)) }
-
+    notFound { req, res -> ErrorController.notFoundPage(req, res) }
 }
 
