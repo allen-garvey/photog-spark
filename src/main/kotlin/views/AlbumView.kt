@@ -13,6 +13,9 @@ class AlbumView: BaseView(){
     }
 
     fun urlForAlbumImage(album: Album, image: Image): String{
-        return "/albums/" + album.id + "/images/" + image.id
+        return "/albums/" + album.id + "/images/" + image.id + "#" + idAttributeForAlbumImage(image)
+    }
+    fun idAttributeForAlbumImage(image: Image): String{
+        return "photo_id" + image.id
     }
 }
