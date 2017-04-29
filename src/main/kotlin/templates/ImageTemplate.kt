@@ -23,13 +23,13 @@ object ImageTemplate{
                 a(AlbumView().urlForAlbum(parentAlbum)){ +"Back to ${parentAlbum.name}" }
                 div("album-image-nav"){
                     if(previousImage != null){
-                        a(AlbumView().urlForAlbumImage(parentAlbum, previousImage)){ "Previous" }
+                        a(AlbumView().urlForAlbumImage(parentAlbum, previousImage)){ +"Previous" }
                     }
                     else{
                         div()
                     }
                     if(nextImage != null){
-                        a(AlbumView().urlForAlbumImage(parentAlbum, nextImage)){ "Next" }
+                        a(AlbumView().urlForAlbumImage(parentAlbum, nextImage)){ +"Next" }
                     }
                 }
                 div("album-image-nav-previews"){
