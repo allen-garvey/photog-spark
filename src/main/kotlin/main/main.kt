@@ -78,6 +78,6 @@ fun main(args: Array<String>) {
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 
     //Errors
-    notFound { req, res -> ErrorController.notFoundPage(req, res) }
+    notFound { req, res -> ErrorController.notFound(req, res) }
 }
 

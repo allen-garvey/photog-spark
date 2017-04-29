@@ -15,12 +15,7 @@ import kotlinx.html.body
  */
 
 object ErrorController{
-    fun notFound(request: Request, response: Response): ModelAndView {
-        response.status(404)
-        return ModelAndView(null, "404.hbs")
-    }
-
-    fun notFoundPage(request: Request, response: Response): String {
+    fun notFound(request: Request, response: Response): String {
         response.status(404)
         return Layout.default(mainContent = {
             h1{
