@@ -4,6 +4,10 @@ package views
  * Created by allen on 3/31/17.
  */
 object BaseView {
+    fun baseUrl(): String{
+        return "/"
+    }
+
     //based on: https://en.wikipedia.org/wiki/Percent-encoding
     fun uriEncode(s: String): String{
         return s

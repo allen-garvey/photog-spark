@@ -2,6 +2,7 @@ package views
 
 import models.Image
 import models.Thumbnail
+import views.BaseView.baseUrl
 import views.BaseView.uriEncode
 
 /**
@@ -32,7 +33,7 @@ object ImageView{
 
     fun urlForImage(image: Image?): String{
         if(image != null){
-            return "/images/" + image.id
+            return  baseUrl() + "images/" + image.id
         }
         return ""
     }

@@ -8,6 +8,7 @@ import htmlTags.MAIN
 import htmlTags.main
 import kotlinx.html.*
 import models.Folder
+import views.BaseView.baseUrl
 import views.FolderView
 
 object Partial{
@@ -25,7 +26,7 @@ object Partial{
             header{
                 attributes["class"] = "header container"
                 h1("brand"){
-                    a("/"){
+                    a(baseUrl()){
                         +"Photog"
                     }
                 }

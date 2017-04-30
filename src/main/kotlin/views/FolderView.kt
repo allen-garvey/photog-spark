@@ -1,6 +1,7 @@
 package views
 
 import models.Folder
+import views.BaseView.baseUrl
 import views.BaseView.uriEncode
 
 /**
@@ -8,6 +9,6 @@ import views.BaseView.uriEncode
  */
 object FolderView {
     fun urlForFolder(folder: Folder): String{
-        return "/folders/" + uriEncode(folder.uuid)
+        return  baseUrl() + "folders/" + uriEncode(folder.uuid)
     }
 }
