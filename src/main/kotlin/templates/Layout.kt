@@ -2,7 +2,6 @@ package templates
 
 
 import htmlTags.MAIN
-import htmlTags.main
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import models.Folder

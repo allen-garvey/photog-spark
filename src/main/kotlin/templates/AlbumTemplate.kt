@@ -17,11 +17,11 @@ object AlbumTemplate{
             ul("album-list thumbnail-list"){
                 albums.forEach {
                     li {
-                        a(AlbumView().urlForAlbum(it), classes = "image-container"){
-                            img(src = ImageView().urlForThumbnailMini(it.coverImage?.thumbnail), alt = "Thumbnail for ${it.name}")
+                        a(AlbumView.urlForAlbum(it), classes = "image-container"){
+                            img(src = ImageView.urlForThumbnailMini(it.coverImage?.thumbnail), alt = "Thumbnail for ${it.name}")
                         }
                         h3("album-title"){
-                            a(AlbumView().urlForAlbum(it)){
+                            a(AlbumView.urlForAlbum(it)){
                                 +it.name
                             }
                         }
@@ -37,8 +37,8 @@ object AlbumTemplate{
             ul("thumbnail-list"){
                 images.forEach {
                     li("image-container"){
-                        a(AlbumView().urlForAlbumImage(album, it)){
-                            img(src = ImageView().urlForThumbnailMini(it.thumbnail))
+                        a(AlbumView.urlForAlbumImage(album, it)){
+                            img(src = ImageView.urlForThumbnailMini(it.thumbnail))
                         }
                     }
                 }

@@ -7,7 +7,6 @@ package templates
 import htmlTags.MAIN
 import kotlinx.html.*
 import models.Album
-import models.Folder
 import models.Image
 import views.AlbumView
 import views.ImageView
@@ -20,28 +19,28 @@ object ImageTemplate{
     fun albumImageHeader(image: Image, parentAlbum: Album, images: MutableList<Image>, previousImage: Image?, nextImage: Image?): MAIN.() -> kotlin.Unit{
         return {
             div("album-image-show-header"){
-                a(AlbumView().urlForAlbum(parentAlbum)){ +"Back to ${parentAlbum.name}" }
+                a(AlbumView.urlForAlbum(parentAlbum)){ +"Back to ${parentAlbum.name}" }
                 div("album-image-nav"){
                     if(previousImage != null){
-                        a(AlbumView().urlForAlbumImage(parentAlbum, previousImage)){ +"Previous" }
+                        a(AlbumView.urlForAlbumImage(parentAlbum, previousImage)){ +"Previous" }
                     }
                     else{
                         div()
                     }
                     if(nextImage != null){
-                        a(AlbumView().urlForAlbumImage(parentAlbum, nextImage)){ +"Next" }
+                        a(AlbumView.urlForAlbumImage(parentAlbum, nextImage)){ +"Next" }
                     }
                 }
                 div("album-image-nav-previews"){
                     ul("image-preview-list"){
                         images.forEach {
                             li{
-                                attributes["id"] = AlbumView().idAttributeForAlbumImage(it)
+                                attributes["id"] = AlbumView.idAttributeForAlbumImage(it)
                                 if(it == image){
                                     attributes["class"] = "current-image"
                                 }
-                                a(AlbumView().urlForAlbumImage(parentAlbum, it), classes = "preview-container"){
-                                    img(src = ImageView().urlForThumbnailMini(it.thumbnail))
+                                a(AlbumView.urlForAlbumImage(parentAlbum, it), classes = "preview-container"){
+                                    img(src = ImageView.urlForThumbnailMini(it.thumbnail))
                                 }
                             }
                         }
@@ -55,20 +54,20 @@ object ImageTemplate{
         return Layout.default({
             header()
             div("image-show-thumbnail-container"){
-                a(ImageView().urlForImageFull(image)){
-                    img(src=ImageView().urlForThumbnail(image.thumbnail))
+                a(ImageView.urlForImageFull(image)){
+                    img(src=ImageView.urlForThumbnail(image.thumbnail))
 
                 }
             }
             div("image-show-link-container"){
-                a(ImageView().urlForImageFull(image)){ +"View full-size" }
+                a(ImageView.urlForImageFull(image)){ +"View full-size" }
             }
             div("image-show-albums"){
                 h3("subsection-title"){ +"Albums" }
                 ul("image-show-album-list"){
                     albums.forEach {
                         li("image-container"){
-                            a(AlbumView().urlForAlbum(it)){ +it.name }
+                            a(AlbumView.urlForAlbum(it)){ +it.name }
                         }
                     }
                 }

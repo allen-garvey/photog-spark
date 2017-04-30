@@ -7,7 +7,7 @@ import models.Image
  * Created by allen on 3/30/17.
  */
 
-class AlbumView: BaseView(){
+object AlbumView{
     fun urlForAlbum(album: Album): String{
         return "/albums/" + album.id
     }

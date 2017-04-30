@@ -44,7 +44,7 @@ object Partial{
                 ul("nav-list"){
                     folders.forEach {
                         li {
-                            a(FolderView().urlForFolder(it)){
+                            a(FolderView.urlForFolder(it)){
                                 +it.name
                             }
                         }

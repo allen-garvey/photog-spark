@@ -2,12 +2,13 @@ package views
 
 import models.Image
 import models.Thumbnail
+import views.BaseView.uriEncode
 
 /**
  * Created by allen on 3/30/17.
  */
 
-class ImageView: BaseView(){
+object ImageView{
     fun urlForImageFull(image: Image?): String{
         if(image != null){
             return "http://photog.alaska.dev/media/images/" + uriEncode(image.path)

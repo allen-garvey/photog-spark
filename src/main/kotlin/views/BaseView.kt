@@ -3,7 +3,7 @@ package views
 /**
  * Created by allen on 3/31/17.
  */
-abstract class BaseView {
+object BaseView {
     //based on: https://en.wikipedia.org/wiki/Percent-encoding
     fun uriEncode(s: String): String{
         return s
