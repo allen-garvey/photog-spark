@@ -8,6 +8,7 @@ A web interface for your Mac Photos library
 * Gradle
 * SassC
 * make
+* inotifywait required if using `make watch_sass` recipe
 
 ## Getting Started
 
