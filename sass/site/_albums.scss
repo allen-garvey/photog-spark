@@ -19,12 +19,9 @@ $thumbnail_dimensions: 205px;
     font-weight: normal;
     margin-bottom: 0;
 }
-.thumbnail-list .image-container{
+.thumbnail-list .image-container img{
     height: $thumbnail_dimensions;
     width: $thumbnail_dimensions;
     border-radius: 10px;
-    overflow: hidden;
-    background-color: dimgray;
-    display: flex;
-    align-items: center;
+    object-fit: cover;
 }
