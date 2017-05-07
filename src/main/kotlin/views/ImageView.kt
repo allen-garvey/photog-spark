@@ -4,6 +4,9 @@ import models.Image
 import models.Thumbnail
 import views.BaseView.baseUrl
 import views.BaseView.uriEncode
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 /**
  * Created by allen on 3/30/17.
@@ -39,5 +42,17 @@ object ImageView{
             return  baseUrl() + "images/" + image.id
         }
         return ""
+    }
+
+    fun creationDate(image: Image): String?{
+        if(image.creation == null){
+            return null
+        }
+        val date = Date()
+        date.setTime(image.creation.time)
+
+        val dateFormatter = SimpleDateFormat("MM/dd/yyyy h:m a")
+        dateFormatter.timeZone = TimeZone.getTimeZone("UTC")
+        return dateFormatter.format(date)
     }
 }

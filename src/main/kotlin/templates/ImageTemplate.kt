@@ -51,6 +51,8 @@ object ImageTemplate{
     }
 
     fun show(image: Image, albums: MutableList<Album>, header: MAIN.() -> kotlin.Unit = {}): String{
+        val imageCreationDate: String? = ImageView.creationDate(image)
+
         return Layout.default({
             header()
             div("image-show-thumbnail-container"){
@@ -61,6 +63,15 @@ object ImageTemplate{
             }
             div("image-show-link-container"){
                 a(ImageView.urlForImageFull(image)){ +"View full-size" }
+            }
+            div{
+                h3("Info")
+                dl{
+                    if(imageCreationDate != null){
+                        dt { +"Date Taken" }
+                        dd { +imageCreationDate }
+                    }
+                }
             }
             div("image-show-albums"){
                 h3("subsection-title"){ +"Albums" }

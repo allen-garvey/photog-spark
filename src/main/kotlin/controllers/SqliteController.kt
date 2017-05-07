@@ -8,9 +8,7 @@ import java.sql.Connection
 import java.sql.SQLException
 import java.sql.DriverManager
 import java.io.File
-
-
-
+import java.sql.Timestamp
 
 
 /**
@@ -103,7 +101,7 @@ object SqliteController{
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null)))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
             }
         })
 
@@ -143,14 +141,14 @@ object SqliteController{
 
     fun imagesForAlbum(albumId: String): MutableList<Image>{
         val images: MutableList<Image> = mutableListOf()
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${ALBUM_VERSION_TABLE}.albumId = ?"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${ALBUM_VERSION_TABLE}.albumId = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), null))
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null))
             }
         })
 
@@ -178,14 +176,14 @@ object SqliteController{
 
     fun selectImage(imageId: String): Image?{
         var image: Image? = null
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, imageId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), null)
+                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null)
             }
         })
         //compiler complains if we just check for null
@@ -251,7 +249,7 @@ object SqliteController{
             val rs    = stmt.executeQuery()
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null)))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
             }
         })
 
