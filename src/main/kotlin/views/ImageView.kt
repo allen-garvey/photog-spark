@@ -51,7 +51,7 @@ object ImageView{
         val date = Date()
         date.setTime(image.creation.time)
 
-        val dateFormatter = SimpleDateFormat("MM/dd/yyyy h:m a")
+        val dateFormatter = SimpleDateFormat("MM/dd/yyyy h:mm a")
         dateFormatter.timeZone = TimeZone.getTimeZone("UTC")
         return dateFormatter.format(date)
     }
