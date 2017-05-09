@@ -64,7 +64,7 @@ object ImageTemplate{
             div("image-show-link-container"){
                 a(ImageView.urlForImageFull(image)){ +"View full-size" }
             }
-            div{
+            div("image-show-info-section"){
                 h3("Info")
                 dl{
                     if(imageCreationDate != null){

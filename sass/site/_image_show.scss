@@ -15,3 +15,23 @@
 .subsection-title{
     margin-bottom: 7px;
 }
+
+$image_show_dt_width: 10em;
+.image-show-info-section{
+	dl{
+		display: flex;
+		flex-wrap: wrap;
+	}
+	dt{
+		font-weight: bold;
+		flex-basis: $image_show_dt_width;
+		margin-bottom: 0.5em;
+		&:after{
+			content: ":";
+		}
+	}
+	dd{
+		flex-basis: calc(100% - #{$image_show_dt_width});
+		margin-left: 0;
+	}
+}
