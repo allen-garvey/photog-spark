@@ -141,14 +141,14 @@ object SqliteController{
 
     fun imagesForAlbum(albumId: String): MutableList<Image>{
         val images: MutableList<Image> = mutableListOf()
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${ALBUM_VERSION_TABLE}.albumId = ?"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${ALBUM_VERSION_TABLE}.albumId = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null))
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite")))
             }
         })
 
@@ -176,14 +176,15 @@ object SqliteController{
 
     fun selectImage(imageId: String): Image?{
         var image: Image? = null
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, imageId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null)
+                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"))
+
             }
         })
         //compiler complains if we just check for null
