@@ -40,6 +40,9 @@ object AlbumTemplate{
                         a(AlbumView.urlForAlbumImage(album, it)){
                             img(src = ImageView.urlForThumbnailMini(it.thumbnail))
                         }
+                        if(it.isFavorite){
+                            div("heart")
+                        }
                     }
                 }
             }

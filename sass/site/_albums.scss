@@ -10,6 +10,7 @@
 $thumbnail_dimensions: 205px;
 
 .thumbnail-list li{
+    position: relative; //for image hearts
     flex-basis: $thumbnail_dimensions;
     margin-bottom: 25px;
 }
