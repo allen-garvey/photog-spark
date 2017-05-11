@@ -71,6 +71,8 @@ object ImageTemplate{
                         dt { +"Date Taken" }
                         dd { +imageCreationDate }
                     }
+                    dt { +"Favorite" }
+                    dd { +image.isFavorite.toString() }
                 }
             }
             div("image-show-albums"){
