@@ -74,6 +74,7 @@ fun main(args: Array<String>) {
 
     //API routes
     get("/api/albums", { req, res -> SqliteController.selectAllAlbums() }, { gson.toJson(it) })
+    get("/api/albums/:id", { req, res -> SqliteController.selectAlbum(req.params(":id")) }, { gson.toJson(it) })
     get("/api/folders", { req, res -> SqliteController.selectAllFolders() }, { gson.toJson(it) })
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
 
