@@ -45,6 +45,7 @@ object SqliteController{
     val THUMBNAIL_TABLE = "RKImageProxyState"
     val FOLDER_TABLE = "RKFolder"
     val PERSON_TABLE = "RKPerson"
+    val PERSON_VERSION_TABLE = "RKPersonVersion"
 
     val DATABASE_FOLDER = "data"
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
@@ -286,5 +287,42 @@ object SqliteController{
         })
 
         return people
+    }
+
+    fun imagesForPerson(personId: String): MutableList<Image>{
+        val versionIds: MutableList<String> = mutableListOf()
+
+        val versionSql = "SELECT ${PERSON_VERSION_TABLE}.versionId AS version_id FROM ${PERSON_VERSION_TABLE} WHERE ${PERSON_VERSION_TABLE}.personId is ?"
+
+        executeOperation(DATABASE_FILENAME_PERSON, { it ->
+            val stmt  = it.prepareStatement(versionSql)
+            stmt.setString(1, personId)
+            val rs    = stmt.executeQuery()
+
+            while (rs.next()) {
+                versionIds.add(rs.getString("version_id"))
+            }
+        })
+
+        val versionIdsString: String = versionIds.map { "'${it}'" }.joinToString(",")
+
+
+        val images: MutableList<Image> = mutableListOf()
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${VERSION_TABLE} INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid WHERE ${VERSION_TABLE}.modelId IN (${versionIdsString})"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.createStatement()
+            val rs    = stmt.executeQuery(sql)
+
+            while (rs.next()) {
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite")))
+            }
+        })
+
+        images.forEach {
+            it.thumbnail = thumbnailForImage(it)
+        }
+
+        return images
     }
 }
