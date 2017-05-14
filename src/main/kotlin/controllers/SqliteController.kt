@@ -1,9 +1,6 @@
 package controllers
 
-import models.Album
-import models.Folder
-import models.Image
-import models.Thumbnail
+import models.*
 import java.sql.Connection
 import java.sql.SQLException
 import java.sql.DriverManager
@@ -46,11 +43,13 @@ object SqliteController{
     val MASTER_TABLE = "RKMaster"
     val ALBUM_VERSION_TABLE = "RKAlbumVersion"
     val THUMBNAIL_TABLE = "RKImageProxyState"
-    var FOLDER_TABLE = "RKFolder"
+    val FOLDER_TABLE = "RKFolder"
+    val PERSON_TABLE = "RKPerson"
 
     val DATABASE_FOLDER = "data"
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
     val DATABASE_FILENAME_THUMBNAILS = "ImageProxies.apdb"
+    val DATABASE_FILENAME_PERSON = "Person.db"
 
     var databaseRoot: String = "/home/allen/Pictures/Mac-Photos-Database"
 
@@ -271,5 +270,21 @@ object SqliteController{
         }
 
         return albums
+    }
+
+    fun selectAllPeople() : MutableList<Person> {
+        val people : MutableList<Person> = mutableListOf()
+        val sql = "SELECT ${PERSON_TABLE}.uuid as person_uuid, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} order by ${PERSON_TABLE}.name"
+
+        executeOperation(DATABASE_FILENAME_PERSON, { it ->
+            val stmt  = it.createStatement()
+            val rs    = stmt.executeQuery(sql)
+
+            while (rs.next()) {
+                people.add(Person(rs.getString("person_uuid"), rs.getString("person_name")))
+            }
+        })
+
+        return people
     }
 }
