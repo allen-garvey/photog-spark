@@ -274,14 +274,14 @@ object SqliteController{
 
     fun selectAllPeople() : MutableList<Person> {
         val people : MutableList<Person> = mutableListOf()
-        val sql = "SELECT ${PERSON_TABLE}.uuid as person_uuid, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} order by ${PERSON_TABLE}.name"
+        val sql = "SELECT ${PERSON_TABLE}.modelid as person_id, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} order by ${PERSON_TABLE}.name"
 
         executeOperation(DATABASE_FILENAME_PERSON, { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                people.add(Person(rs.getString("person_uuid"), rs.getString("person_name")))
+                people.add(Person(rs.getString("person_id"), rs.getString("person_name")))
             }
         })
 
