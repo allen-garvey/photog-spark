@@ -78,6 +78,7 @@ fun main(args: Array<String>) {
     get("/api/folders", { req, res -> SqliteController.selectAllFolders() }, { gson.toJson(it) })
     get("/api/albums/:id/images", { req, res -> SqliteController.imagesForAlbum(req.params(":id")) }, { gson.toJson(it) })
     get("/api/people", { req, res -> SqliteController.selectAllPeople() }, { gson.toJson(it) })
+    get("/api/people/:id/images", { req, res -> SqliteController.imagesForPerson(req.params(":id")) }, { gson.toJson(it) })
 
     //Errors
     notFound { req, res -> ErrorController.notFound(req, res) }
