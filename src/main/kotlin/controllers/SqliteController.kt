@@ -273,6 +273,20 @@ object SqliteController{
         return albums
     }
 
+    fun selectPerson(personId: String): Person?{
+        var person: Person? = null
+        val sql = "SELECT ${PERSON_TABLE}.modelid as person_id, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} where person_id = ?"
+        executeOperation(DATABASE_FILENAME_PERSON, { it ->
+            val stmt  = it.prepareStatement(sql)
+            stmt.setString(1, personId)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                person = Person(rs.getString("person_id"), rs.getString("person_name"))
+            }
+        })
+        return person
+    }
+
     fun selectAllPeople() : MutableList<Person> {
         val people : MutableList<Person> = mutableListOf()
         val sql = "SELECT ${PERSON_TABLE}.modelid as person_id, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} order by ${PERSON_TABLE}.name"
