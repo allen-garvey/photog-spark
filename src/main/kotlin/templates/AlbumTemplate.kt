@@ -30,22 +30,5 @@ object AlbumTemplate{
             }
         }, subTitle = pageSubTitle)
     }
-
-    fun show(folders: MutableList<Folder>, album: Album, images: MutableList<Image>): String{
-        return Layout.mainLayout(folders, {
-            h2 { +album.name }
-            ul("thumbnail-list"){
-                images.forEach {
-                    li("image-container"){
-                        a(AlbumView.urlForAlbumImage(album, it)){
-                            img(src = ImageView.urlForThumbnailMini(it.thumbnail))
-                        }
-                        if(it.isFavorite){
-                            div("heart")
-                        }
-                    }
-                }
-            }
-        }, subTitle = album.name)
-    }
+    
 }

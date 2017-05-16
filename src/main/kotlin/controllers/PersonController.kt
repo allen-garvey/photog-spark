@@ -1,10 +1,12 @@
 package controllers
 
+import views.ImageView
 import models.Image
 import models.Person
 import spark.Request
 import spark.Response
 import templates.PersonTemplate
+import templates.SharedTemplate
 
 /**
  * Created by allen on 5/16/17.
@@ -14,7 +16,8 @@ object PersonController {
         val person: Person = SqliteController.selectPerson(request.params(personIdParameterName)) ?: return ErrorController.notFound(request, response)
 
         val images: MutableList<Image> = SqliteController.imagesForPerson(person.id)
-        return PersonTemplate.show(SqliteController.selectAllFolders(), person, images)
+
+        return SharedTemplate.imageListPage(SqliteController.selectAllFolders(), person.name, images, { ImageView.urlForImage(it) })
 
     }
 }
