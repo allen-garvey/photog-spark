@@ -12,8 +12,8 @@ import views.PersonView
  */
 
 object PersonTemplate{
-    fun index(folders: MutableList<Folder>, people: MutableList<Person>): String{
-        return Layout.mainLayout(folders, {
+    fun index(people: MutableList<Person>): String{
+        return Layout.mainLayout({
             ul(""){
                 people.forEach {
                     li {

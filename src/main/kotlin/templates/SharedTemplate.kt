@@ -10,8 +10,8 @@ import models.Image
 import views.ImageView
 
 object SharedTemplate{
-    fun imageListPage(folders: MutableList<Folder>, pageTitle: String, images: MutableList<Image>, imageUrlFunc: (Image) -> String): String{
-        return Layout.mainLayout(folders, {
+    fun imageListPage(pageTitle: String, images: MutableList<Image>, imageUrlFunc: (Image) -> String): String{
+        return Layout.mainLayout({
             h2 { +pageTitle }
             ul("thumbnail-list"){
                 images.forEach {

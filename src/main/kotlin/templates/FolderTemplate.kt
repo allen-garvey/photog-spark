@@ -10,7 +10,7 @@ import views.FolderView
 
 object FolderTemplate {
     fun index(folders: MutableList<Folder>): String{
-        return Layout.mainLayout(folders, {
+        return Layout.mainLayout({
             ul(""){
                 folders.forEach {
                     li {

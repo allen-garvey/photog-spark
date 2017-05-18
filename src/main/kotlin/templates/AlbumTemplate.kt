@@ -11,9 +11,9 @@ import views.ImageView
  * Created by allen on 4/28/17.
  */
 object AlbumTemplate{
-    fun index(folders: MutableList<Folder>, albums: MutableList<Album>, subTitle: String? = null): String{
+    fun index(albums: MutableList<Album>, subTitle: String? = null): String{
         val pageSubTitle: String = subTitle ?: "All albums"
-        return Layout.mainLayout(folders, {
+        return Layout.mainLayout({
             ul("album-list thumbnail-list"){
                 albums.forEach {
                     li {

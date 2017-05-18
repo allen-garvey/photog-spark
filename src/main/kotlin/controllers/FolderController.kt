@@ -19,6 +19,6 @@ object FolderController{
 
     fun show(request: Request, response: Response, folderIdParameterName: String): String {
         val folder: Folder = SqliteController.selectFolder(request.params(folderIdParameterName)) ?: return ErrorController.notFound(request, response)
-        return AlbumTemplate.index(SqliteController.selectAllFolders(), SqliteController.albumsForFolder(request.params(folderIdParameterName)), folder.name)
+        return AlbumTemplate.index(SqliteController.albumsForFolder(request.params(folderIdParameterName)), folder.name)
     }
 }

@@ -8,8 +8,10 @@ import htmlTags.MAIN
 import htmlTags.main
 import kotlinx.html.*
 import models.Folder
+import views.AlbumView
 import views.BaseView.baseUrl
 import views.FolderView
+import views.PersonView
 
 object Partial{
     fun mainContentPartial(mainContent: MAIN.() -> kotlin.Unit): BODY.() -> kotlin.Unit{
@@ -35,21 +37,30 @@ object Partial{
         }
     }
 
-    fun headerPartial(folders: MutableList<Folder>): BODY.() -> kotlin.Unit{
-        return headerPartial(mainNavPartial(folders))
+    fun headerPartial(): BODY.() -> kotlin.Unit{
+        return headerPartial(mainNavPartial())
     }
 
-    fun mainNavPartial(folders: MutableList<Folder>): HEADER.() -> kotlin.Unit{
+    fun mainNavPartial(): HEADER.() -> kotlin.Unit{
         return {
             nav {
                 ul("nav-list"){
-                    folders.forEach {
-                        li {
-                            a(FolderView.urlForFolder(it)){
-                                +it.name
-                            }
+                    li {
+                        a(AlbumView.indexUrl()){
+                            +"Albums"
                         }
                     }
+                    li {
+                        a(FolderView.indexUrl()){
+                            +"Folders"
+                        }
+                    }
+                    li {
+                        a(PersonView.indexUrl()){
+                            +"People"
+                        }
+                    }
+
                 }
             }
         }

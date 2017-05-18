@@ -43,7 +43,7 @@ object Layout {
     }
 
 
-    fun mainLayout(folders: MutableList<Folder>, mainContent: MAIN.() -> kotlin.Unit, subTitle: String? = null): String{
-        return default(mainContent, headerContent = Partial.headerPartial(folders), subTitle = subTitle)
+    fun mainLayout(mainContent: MAIN.() -> kotlin.Unit, subTitle: String? = null): String{
+        return default(mainContent, headerContent = Partial.headerPartial(), subTitle = subTitle)
     }
 }

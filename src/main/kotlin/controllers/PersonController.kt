@@ -13,7 +13,7 @@ import templates.SharedTemplate
  */
 object PersonController {
     fun index(request: Request, response: Response): String {
-        return PersonTemplate.index(SqliteController.selectAllFolders(), SqliteController.selectAllPeople())
+        return PersonTemplate.index(SqliteController.selectAllPeople())
     }
 
 
@@ -22,7 +22,7 @@ object PersonController {
 
         val images: MutableList<Image> = SqliteController.imagesForPerson(person.id)
 
-        return SharedTemplate.imageListPage(SqliteController.selectAllFolders(), person.name, images, { ImageView.urlForImage(it) })
+        return SharedTemplate.imageListPage(person.name, images, { ImageView.urlForImage(it) })
 
     }
 }
