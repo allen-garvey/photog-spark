@@ -17,7 +17,7 @@ object PersonTemplate{
             ul(""){
                 people.forEach {
                     li {
-                        a(PersonView.urlForPerson(it), classes = "image-container"){
+                        a(PersonView.urlForPerson(it)){
                             +it.name
                         }
                     }
