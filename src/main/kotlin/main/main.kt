@@ -64,7 +64,10 @@ fun main(args: Array<String>) {
 
 
     get("/", { req, res -> AlbumController.index(req, res) })
+
+    get("/folders", { req, res -> FolderController.index(req, res) })
     get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid") })
+
     get("/albums", { req, res -> AlbumController.index(req, res) })
     get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id") })
     get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") })
