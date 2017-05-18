@@ -71,6 +71,8 @@ fun main(args: Array<String>) {
 
     get("/images/:id", { req, res -> ImageController.show(req, res, ":id") })
 
+
+    get("/people", { req, res -> PersonController.index(req, res) })
     get("/people/:id", { req, res -> PersonController.show(req, res, ":id") })
 
 

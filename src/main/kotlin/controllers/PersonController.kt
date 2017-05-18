@@ -12,6 +12,11 @@ import templates.SharedTemplate
  * Created by allen on 5/16/17.
  */
 object PersonController {
+    fun index(request: Request, response: Response): String {
+        return PersonTemplate.index(SqliteController.selectAllFolders(), SqliteController.selectAllPeople())
+    }
+
+
     fun show(request: Request, response: Response, personIdParameterName: String): String {
         val person: Person = SqliteController.selectPerson(request.params(personIdParameterName)) ?: return ErrorController.notFound(request, response)
 
