@@ -8,10 +8,10 @@ import views.BaseView.baseUrl
  */
 object PersonView {
     fun indexUrl(): String{
-        return baseUrl() + "people/"
+        return baseUrl() + "people"
     }
 
     fun urlForPerson(person: Person): String{
-        return indexUrl() + person.id
+        return indexUrl() + "/" + person.id
     }
 }

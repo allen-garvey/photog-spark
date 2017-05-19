@@ -9,11 +9,11 @@ import views.BaseView.uriEncode
  */
 object FolderView {
     fun indexUrl(): String{
-        return baseUrl() + "folders/"
+        return baseUrl() + "folders"
     }
 
 
     fun urlForFolder(folder: Folder): String{
-        return  indexUrl() + uriEncode(folder.uuid)
+        return  indexUrl() + "/" + uriEncode(folder.uuid)
     }
 }

@@ -10,15 +10,15 @@ import views.BaseView.baseUrl
 
 object AlbumView{
     fun indexUrl(): String{
-        return baseUrl() + "albums/"
+        return baseUrl() + "albums"
     }
 
     fun urlForAlbum(album: Album): String{
-        return  indexUrl() + album.id
+        return  indexUrl() + "/" + album.id
     }
 
     fun urlForAlbumImage(album: Album, image: Image): String{
-        return indexUrl() + album.id + "/images/" + image.id + "#" + idAttributeForAlbumImage(image)
+        return indexUrl() + "/" + album.id + "/images/" + image.id + "#" + idAttributeForAlbumImage(image)
     }
     fun idAttributeForAlbumImage(image: Image): String{
         return "photo_id" + image.id
