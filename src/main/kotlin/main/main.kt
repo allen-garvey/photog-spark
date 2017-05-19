@@ -8,6 +8,9 @@ import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import controllers.*
 import spark.Filter
+import views.AlbumView
+import views.FolderView
+import views.PersonView
 
 
 fun main(args: Array<String>) {
@@ -65,18 +68,18 @@ fun main(args: Array<String>) {
 
     get("/", { req, res -> AlbumController.index(req, res) })
 
-    get("/folders", { req, res -> FolderController.index(req, res) })
-    get("/folders/:uuid", { req, res -> FolderController.show(req, res, ":uuid") })
+    get(FolderView.indexUrl(), { req, res -> FolderController.index(req, res) })
+    get("${FolderView.indexUrl()}/:uuid", { req, res -> FolderController.show(req, res, ":uuid") })
 
-    get("/albums", { req, res -> AlbumController.index(req, res) })
-    get("/albums/:id", { req, res -> AlbumController.show(req, res, ":id") })
-    get("/albums/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") })
+    get(AlbumView.indexUrl(), { req, res -> AlbumController.index(req, res) })
+    get("${AlbumView.indexUrl()}/:id", { req, res -> AlbumController.show(req, res, ":id") })
+    get("${AlbumView.indexUrl()}/:album_id/images/:image_id", { req, res -> ImageController.showAlbumImage(req, res, ":album_id", ":image_id") })
 
     get("/images/:id", { req, res -> ImageController.show(req, res, ":id") })
 
 
-    get("/people", { req, res -> PersonController.index(req, res) })
-    get("/people/:id", { req, res -> PersonController.show(req, res, ":id") })
+    get(PersonView.indexUrl(), { req, res -> PersonController.index(req, res) })
+    get("${PersonView.indexUrl()}/:id", { req, res -> PersonController.show(req, res, ":id") })
 
 
     //API routes
