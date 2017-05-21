@@ -7,13 +7,18 @@ import spark.Request
 import spark.Response
 import templates.PersonTemplate
 import templates.SharedTemplate
+import views.Link
+import views.PersonView
 
 /**
  * Created by allen on 5/16/17.
  */
 object PersonController {
     fun index(request: Request, response: Response): String {
-        return PersonTemplate.index(SqliteController.selectAllPeople())
+        val people: MutableList<Person> = SqliteController.selectAllPeople()
+        val peopleLinks: List<Link> = people.map { Link(it.name, PersonView.urlForPerson(it)) }
+
+        return SharedTemplate.textListPage("People", peopleLinks, "All people")
     }
 
 

@@ -9,18 +9,5 @@ import models.Folder
 import views.FolderView
 
 object FolderTemplate {
-    fun index(folders: MutableList<Folder>): String{
-        return Layout.mainLayout({
-            h2{ +"Folders" }
-            ul("text-list"){
-                folders.forEach {
-                    li {
-                        a(FolderView.urlForFolder(it)){
-                            +it.name
-                        }
-                    }
-                }
-            }
-        }, subTitle = "All folders")
-    }
+
 }
