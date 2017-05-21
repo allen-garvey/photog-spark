@@ -14,7 +14,8 @@ import views.PersonView
 object PersonTemplate{
     fun index(people: MutableList<Person>): String{
         return Layout.mainLayout({
-            ul(""){
+            h2{ +"People" }
+            ul("text-list"){
                 people.forEach {
                     li {
                         a(PersonView.urlForPerson(it)){
