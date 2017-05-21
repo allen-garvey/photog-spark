@@ -289,7 +289,7 @@ object SqliteController{
 
     fun selectAllPeople() : MutableList<Person> {
         val people : MutableList<Person> = mutableListOf()
-        val sql = "SELECT ${PERSON_TABLE}.modelid as person_id, ${PERSON_TABLE}.name as person_name from ${PERSON_TABLE} order by ${PERSON_TABLE}.name"
+        val sql = "SELECT ${PERSON_TABLE}.modelid AS person_id, ${PERSON_TABLE}.name AS person_name FROM ${PERSON_TABLE} WHERE person_id IN (SELECT personid FROM ${PERSON_VERSION_TABLE}) ORDER BY ${PERSON_TABLE}.name"
 
         executeOperation(DATABASE_FILENAME_PERSON, { it ->
             val stmt  = it.createStatement()
