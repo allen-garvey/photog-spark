@@ -46,6 +46,7 @@ object SqliteController{
     val FOLDER_TABLE = "RKFolder"
     val PERSON_TABLE = "RKPerson"
     val PERSON_VERSION_TABLE = "RKPersonVersion"
+    val CUSTOM_SORT_ORDER_TABLE = "RKCustomSortOrder"
 
     val DATABASE_FOLDER = "data"
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
@@ -242,11 +243,12 @@ object SqliteController{
 
     fun albumsForFolder(folderUuid: String): MutableList<Album>{
         val albums : MutableList<Album> = mutableListOf()
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" and ${ALBUM_TABLE}.folderUuid is ? order by ${ALBUM_TABLE}.modelId desc"
+        val sql = "SELECT ${ALBUM_TABLE}.modelId AS album_id, ${ALBUM_TABLE}.name AS album_name, ${MASTER_TABLE}.modelid AS coverimage_id, ${VERSION_TABLE}.modelid AS coverimage_version_id, ${MASTER_TABLE}.imagepath AS coverimage_path, (SELECT ${CUSTOM_SORT_ORDER_TABLE}.orderNumber FROM ${CUSTOM_SORT_ORDER_TABLE} WHERE ${CUSTOM_SORT_ORDER_TABLE}.containerUuid = ? AND ${CUSTOM_SORT_ORDER_TABLE}.objectUuid = ${ALBUM_TABLE}.uuid) AS sort_order FROM ${ALBUM_TABLE} INNER JOIN ${VERSION_TABLE} ON ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid INNER JOIN ${MASTER_TABLE} ON ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId WHERE ${ALBUM_TABLE}.name IS NOT NULL AND ${ALBUM_TABLE}.name != \"\" AND ${ALBUM_TABLE}.folderUuid IS ? ORDER BY sort_order, ${ALBUM_TABLE}.modelId DESC"
 
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, folderUuid)
+            stmt.setString(2, folderUuid)
             val rs    = stmt.executeQuery()
 
             while (rs.next()) {
