@@ -52,7 +52,7 @@ object SqliteController{
     val DATABASE_FILENAME_THUMBNAILS = "ImageProxies.apdb"
     val DATABASE_FILENAME_PERSON = "Person.db"
 
-    var databaseRoot: String = "/home/allen/Pictures/Mac-Photos-Database"
+    var databaseRoot: String = System.getProperty("user.home") + "/Documents/Mac-Photos-Database"
 
     fun databasePathFor(databaseFilename: String): String{
         return File(databaseRoot, databaseFilename).toString()
