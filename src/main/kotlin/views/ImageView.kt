@@ -13,8 +13,8 @@ import java.util.*
  */
 
 object ImageView{
-    val ASSET_IMAGE_BASE_URL: String = "http://photog.alaska.dev/media/images/"
-    val ASSET_THUMBNAIL_BASE_URL: String = "http://photog.alaska.dev/media/thumbnails/"
+    val ASSET_IMAGE_BASE_URL: String = "${BaseView.baseUrl()}media/images/"
+    val ASSET_THUMBNAIL_BASE_URL: String = "${BaseView.baseUrl()}media/thumbnails/"
 
     fun urlForImageFull(image: Image?): String{
         if(image != null){
