@@ -13,26 +13,33 @@ import java.util.*
  */
 
 object ImageView{
-    val ASSET_IMAGE_BASE_URL: String = "${BaseView.baseUrl()}media/images/"
-    val ASSET_THUMBNAIL_BASE_URL: String = "${BaseView.baseUrl()}media/thumbnails/"
+    var mediaBaseUrl: String = BaseView.baseUrl()
+
+    fun thumbnailAssetBaseUrl(): String{
+        return "${mediaBaseUrl}media/thumbnails/"
+    }
+
+    fun imageAssetBaseUrl(): String{
+        return "${mediaBaseUrl}media/images/"
+    }
 
     fun urlForImageFull(image: Image?): String{
         if(image != null){
-            return ASSET_IMAGE_BASE_URL + uriEncode(image.path)
+            return imageAssetBaseUrl() + uriEncode(image.path)
         }
         return ""
     }
 
     fun urlForThumbnailMini(thumbnail: Thumbnail?): String{
         if(thumbnail != null){
-            return ASSET_THUMBNAIL_BASE_URL + uriEncode(thumbnail.miniThumbnailPath)
+            return thumbnailAssetBaseUrl() + uriEncode(thumbnail.miniThumbnailPath)
         }
         return ""
     }
 
     fun urlForThumbnail(thumbnail: Thumbnail?): String{
         if(thumbnail != null){
-            return ASSET_THUMBNAIL_BASE_URL + uriEncode(thumbnail.thumbnailPath)
+            return thumbnailAssetBaseUrl() + uriEncode(thumbnail.thumbnailPath)
         }
         return ""
     }

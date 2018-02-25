@@ -41,3 +41,6 @@ example.log*
 
 #compiled css
 src/main/resources/public/styles/*.css
+
+#media for development
+/media

@@ -10,34 +10,38 @@ import controllers.*
 import spark.Filter
 import views.AlbumView
 import views.FolderView
+import views.ImageView
 import views.PersonView
 
 
 fun main(args: Array<String>) {
+    if(args.size < 2){
+        System.err.println("usage: photog.jar <port_number> <apdb_directory_path>")
+        System.exit(1)
+    }
+
+    //get port
     var portNum: Int = 3000
-
-    if (args.isNotEmpty()) {
-        try {
-            val userPortNum: Int = Integer.parseInt(args[0])
-            if (userPortNum in 1..65534) {
-                portNum = userPortNum
-            }
-        } catch (e: NumberFormatException) {
-            //don't do anything, since we will use default port
+    try {
+        val userPortNum: Int = Integer.parseInt(args[0])
+        if (userPortNum in 1..65534) {
+            portNum = userPortNum
         }
+    } catch (e: NumberFormatException) {
+        //don't do anything, since we will use default port
     }
 
-    if (args.size >= 2) {
-        SqliteController.databaseRoot = args[1]
-    }
+    SqliteController.databaseRoot = args[1]
 
     port(portNum)
 
     //live reload static files in development
-    if (args.isNotEmpty()) {
-        staticFiles.location("/public")
-    } else {
+    if(args[2] == "debug=true"){
         staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public")
+        ImageView.mediaBaseUrl = "http://localhost:3000/"
+    }
+    else{
+        staticFiles.location("/public")
     }
 
     //allow routes to match with trailing slash
