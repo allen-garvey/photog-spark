@@ -13,7 +13,7 @@ import java.util.*
  */
 
 object ImageView{
-    var mediaBaseUrl: String = BaseView.baseUrl()
+    val mediaBaseUrl: String = BaseView.baseUrl()
 
     fun thumbnailAssetBaseUrl(): String{
         return "${mediaBaseUrl}media/thumbnails/"
