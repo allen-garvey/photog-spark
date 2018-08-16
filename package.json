@@ -1,0 +1,29 @@
+{
+  "name": "photog",
+  "version": "1.0.0",
+  "description": "A web interface for your Mac Photos library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack:dev": "webpack --config webpack.config.js",
+    "webpack:prod": "webpack --config webpack.production.config.js",
+    "webpack:watch": "webpack --config webpack.watch.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/allen-garvey/photog-spark.git"
+  },
+  "author": "Allen Garvey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/allen-garvey/photog-spark/issues"
+  },
+  "homepage": "https://github.com/allen-garvey/photog-spark#readme",
+  "devDependencies": {
+    "vue": "^2.5.17",
+    "vue-loader": "^15.3.0",
+    "vue-template-compiler": "^2.5.17",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0"
+  }
+}
