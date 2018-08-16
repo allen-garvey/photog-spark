@@ -56,3 +56,6 @@ npm-debug*
 #sass
 .sass-cache
 .sass-cache/*
+
+#vs code settings
+.vscode/*
