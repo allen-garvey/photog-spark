@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
     port(portNum)
 
     //live reload static files in development
-    if(args[2] == "debug=true"){
+    if(args.size >= 3 && args[2] == "debug=true"){
         staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public")
         ImageView.mediaBaseUrl = "http://localhost:3000/"
     }
