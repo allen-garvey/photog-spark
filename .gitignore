@@ -42,5 +42,17 @@ example.log*
 #compiled css
 src/main/resources/public/styles/*.css
 
+#compiled js
+src/main/resources/public/js/*.js
+
 #media for development
 /media
+
+#npm
+/node_modules/*
+npm-debug.log
+npm-debug*
+
+#sass
+.sass-cache
+.sass-cache/*
