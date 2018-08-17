@@ -1,6 +1,7 @@
 package main
 
 import controllers.SqliteController
+import java.sql.Timestamp
 
 
 fun sqlEscapeOptionalString(s: String?): String{
@@ -21,11 +22,24 @@ fun sqlOptionalInt(d: Int?): String{
     return d.toString()
 }
 
+fun sqlBool(b: Boolean = false): String{
+    if(b){
+        return "true"
+    }
+    return "false"
+}
+
 fun sqlOptionalInt(s: String?): String{
     if(s == null){
         return "null"
     }
     return s
+}
+
+//postgresql to timestamp https://www.postgresql.org/docs/8.2/static/functions-formatting.html
+fun sqlTimestamp(t: Timestamp): String{
+//    return "to_timestamp('${t.toInstant().toString()}', 'YYYY-MM-DD HH:MI:SS')"
+    return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH:MI:SS')"
 }
 
 
@@ -36,12 +50,12 @@ fun main(args: Array<String>) {
 
 
 
-    println("--Folders\n")
+    println("\n\n--Folders\n")
     SqliteController.selectAllFolders().forEach{
         println("INSERT INTO folders (apple_photos_uuid, name) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)});")
     }
 
-    println("--Albums\n")
+    println("\n\n--Albums\n")
     var albums = SqliteController.selectAllAlbums()
     albums.sortBy({it.id.toInt()})
     albums.forEach{
@@ -49,11 +63,17 @@ fun main(args: Array<String>) {
     }
 
 
-    println("--People\n")
+    println("\n\n--People\n")
     var people = SqliteController.selectAllPeople()
     people.sortBy({it.id.toInt()})
     people.forEach{
         println("INSERT INTO persons (apple_photos_id, name) VALUES (${it.id}, ${sqlEscapeString(it.name)});")
+    }
+
+
+    println("\n\n--Images\n")
+    SqliteController.selectAllImages().forEach{
+        println("INSERT INTO images (apple_photos_id, apple_photos_version_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${it.versionId}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
     }
 
 
