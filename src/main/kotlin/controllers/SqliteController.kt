@@ -95,14 +95,14 @@ object SqliteController{
 
     fun selectAllAlbums() : MutableList<Album> {
         val albums : MutableList<Album> = mutableListOf()
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid,  ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path from ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
 
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
             }
         })
 
@@ -128,13 +128,13 @@ object SqliteController{
 
     fun selectAlbum(albumId: String): Album?{
         var album: Album? = null
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name from ${ALBUM_TABLE} where album_id = ?"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid from ${ALBUM_TABLE} where album_id = ?"
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                album = Album(rs.getString("album_id"), rs.getString("album_name"), null)
+                album = Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), null)
             }
         })
         return album
@@ -198,14 +198,14 @@ object SqliteController{
 
     fun albumsForImage(imageId: String): MutableList<Album>{
         val albums: MutableList<Album> = mutableListOf()
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name FROM ${ALBUM_TABLE} WHERE album_id IN (SELECT albumId from ${ALBUM_VERSION_TABLE} WHERE versionId IN (SELECT modelId from ${VERSION_TABLE} WHERE masterId = ?))"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid FROM ${ALBUM_TABLE} WHERE album_id IN (SELECT albumId from ${ALBUM_VERSION_TABLE} WHERE versionId IN (SELECT modelId from ${VERSION_TABLE} WHERE masterId = ?))"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             stmt.setString(1, imageId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), null))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), null))
             }
         })
 
@@ -253,7 +253,7 @@ object SqliteController{
             val rs    = stmt.executeQuery()
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), folderUuid, Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
             }
         })
 
