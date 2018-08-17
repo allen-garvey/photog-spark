@@ -67,9 +67,8 @@ fun main(args: Array<String>) {
     var people = SqliteController.selectAllPeople()
     people.sortBy({it.id.toInt()})
     people.forEach{
-        println("INSERT INTO persons (apple_photos_id, name) VALUES (${it.id}, ${sqlEscapeString(it.name)});")
+        println("INSERT INTO persons (apple_photos_id, name, cover_image_id) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${it.coverImageId!!});")
     }
-
 
     println("\n\n--Images\n")
     SqliteController.selectAllImages().forEach{
