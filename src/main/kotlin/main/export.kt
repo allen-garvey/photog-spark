@@ -77,4 +77,11 @@ fun main(args: Array<String>) {
     }
 
 
+
+    println("\n\n--Person Images\n")
+    SqliteController.selectAllPersonImages().forEach{
+        println("INSERT INTO person_images (person_id, image_id) VALUES (${it.personId}, ${it.imageId});")
+    }
+
+
 }
