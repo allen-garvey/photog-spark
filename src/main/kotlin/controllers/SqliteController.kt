@@ -48,6 +48,7 @@ object SqliteController{
     val THUMBNAIL_TABLE = "RKImageProxyState"
     val FOLDER_TABLE = "RKFolder"
     val PERSON_TABLE = "RKPerson"
+    var FACE_TABLE = "RKFace"
     val PERSON_VERSION_TABLE = "RKPersonVersion"
     val CUSTOM_SORT_ORDER_TABLE = "RKCustomSortOrder"
 
@@ -313,16 +314,35 @@ object SqliteController{
 
     fun selectAllPeople() : MutableList<Person> {
         val people : MutableList<Person> = mutableListOf()
-        val sql = "SELECT ${PERSON_TABLE}.modelid AS person_id, ${PERSON_TABLE}.name AS person_name FROM ${PERSON_TABLE} WHERE person_id IN (SELECT personid FROM ${PERSON_VERSION_TABLE}) ORDER BY ${PERSON_TABLE}.name"
+        val sql = "SELECT ${PERSON_TABLE}.modelid AS person_id, ${PERSON_TABLE}.name AS person_name, ${FACE_TABLE}.imageid as cover_version_uuid FROM ${PERSON_TABLE} INNER JOIN ${FACE_TABLE} ON ${FACE_TABLE}.modelid = ${PERSON_TABLE}.representativeFaceId WHERE person_id IN (SELECT personid FROM ${PERSON_VERSION_TABLE}) ORDER BY ${PERSON_TABLE}.name"
 
         executeOperation(DATABASE_FILENAME_PERSON, { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                people.add(Person(rs.getString("person_id"), rs.getString("person_name")))
+                people.add(Person(rs.getString("person_id"), rs.getString("person_name"), rs.getString("cover_version_uuid")))
             }
         })
+
+        //translate rkversion.uuid to rkimage.modelId
+
+        val versionSql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.uuid as version_uuid FROM ${VERSION_TABLE} INNER JOIN ${MASTER_TABLE} ON master_id = ${VERSION_TABLE}.masterid WHERE version_uuid = ?"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(versionSql)
+
+            people.forEach {
+                stmt.setString(1, it.coverImageId)
+                val rs    = stmt.executeQuery()
+
+                while (rs.next()) {
+                    it.coverImageId = rs.getString("master_id")
+                }
+            }
+
+        })
+
 
         return people
     }
