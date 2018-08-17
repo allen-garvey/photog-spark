@@ -395,4 +395,39 @@ object SqliteController{
 
         return personImages
     }
+
+    fun selectAllAlbumImages(): MutableList<AlbumImage>{
+
+        val albumVersions: MutableList<AlbumVersion> = mutableListOf()
+        val versionSql = "SELECT albumId as album_id, versionId as version_id from ${ALBUM_VERSION_TABLE}"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
+            val stmt  = it.prepareStatement(versionSql)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                albumVersions.add(AlbumVersion(rs.getString("album_id"), rs.getString("version_id")))
+            }
+        })
+
+        val albumImages: MutableList<AlbumImage> = mutableListOf()
+
+
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id FROM ${VERSION_TABLE} INNER JOIN ${MASTER_TABLE} ON master_id = ${VERSION_TABLE}.masterid WHERE version_id = ?"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+
+            albumVersions.forEach {
+                stmt.setString(1, it.versionId)
+                val rs    = stmt.executeQuery()
+
+                while (rs.next()) {
+                    albumImages.add(AlbumImage(it.albumId, rs.getString("master_id")))
+                }
+            }
+
+        })
+
+        return albumImages
+    }
 }
