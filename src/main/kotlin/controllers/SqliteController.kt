@@ -178,7 +178,7 @@ object SqliteController{
 
     fun selectImage(imageId: String): Image?{
         var image: Image? = null
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE ${MASTER_TABLE}.modelId = ?"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId WHERE master_id = ?"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
@@ -359,5 +359,40 @@ object SqliteController{
         }
 
         return images
+    }
+
+    fun selectAllPersonImages(): MutableList<PersonImage>{
+
+        val personVersions: MutableList<PersonVersion> = mutableListOf()
+        val versionSql = "SELECT ${PERSON_VERSION_TABLE}.personId as person_id, ${PERSON_VERSION_TABLE}.versionId AS version_id FROM ${PERSON_VERSION_TABLE}"
+
+        executeOperation(DATABASE_FILENAME_PERSON, { it ->
+            val stmt  = it.prepareStatement(versionSql)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                personVersions.add(PersonVersion(rs.getString("person_id"), rs.getString("version_id")))
+            }
+        })
+
+        val personImages: MutableList<PersonImage> = mutableListOf()
+
+
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id FROM ${VERSION_TABLE} INNER JOIN ${MASTER_TABLE} ON master_id = ${VERSION_TABLE}.masterid WHERE version_id = ?"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+
+            personVersions.forEach {
+                stmt.setString(1, it.versionId)
+                val rs    = stmt.executeQuery()
+
+                while (rs.next()) {
+                    personImages.add(PersonImage(it.personId, rs.getString("master_id")))
+                }
+            }
+
+        })
+
+        return personImages
     }
 }
