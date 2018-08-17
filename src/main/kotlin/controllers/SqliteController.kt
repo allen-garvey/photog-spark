@@ -196,6 +196,24 @@ object SqliteController{
         return safeImage
     }
 
+    fun selectAllImages(): MutableList<Image>{
+        val images : MutableList<Image> = mutableListOf()
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId ORDER BY master_id"
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                val image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"))
+
+                image.thumbnail = thumbnailForImage(image)
+                images.add(image)
+            }
+        })
+
+        return images
+    }
+
     fun albumsForImage(imageId: String): MutableList<Album>{
         val albums: MutableList<Album> = mutableListOf()
         val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid FROM ${ALBUM_TABLE} WHERE album_id IN (SELECT albumId from ${ALBUM_VERSION_TABLE} WHERE versionId IN (SELECT modelId from ${VERSION_TABLE} WHERE masterId = ?))"
