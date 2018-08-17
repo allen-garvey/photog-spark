@@ -42,7 +42,19 @@ fun main(args: Array<String>) {
     }
 
     println("--Albums\n")
-    SqliteController.selectAllAlbums().forEach{
+    var albums = SqliteController.selectAllAlbums()
+    albums.sortBy({it.id.toInt()})
+    albums.forEach{
         println("INSERT INTO albums (apple_photos_id, name, folder_id, cover_image_id) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${sqlEscapeString(it.folderUuid)}, ${sqlOptionalInt(it.coverImage?.id)});")
     }
+
+
+    println("--People\n")
+    var people = SqliteController.selectAllPeople()
+    people.sortBy({it.id.toInt()})
+    people.forEach{
+        println("INSERT INTO persons (apple_photos_id, name) VALUES (${it.id}, ${sqlEscapeString(it.name)});")
+    }
+
+
 }
