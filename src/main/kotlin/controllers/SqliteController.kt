@@ -35,6 +35,9 @@ select modelid, imagepath from rkmaster where modelid in (select masterid from r
 --select folders
 select rkfolder.uuid, rkfolder.name from rkfolder where rkfolder.uuid in (select folderuuid from rkalbum where modelid in (select albumid from rkalbumversion)) and rkfolder.name is not "" order by rkfolder.name;
 
+--select cover image versions for person (need to convert rkversion.uuid to rkmaster.id)
+select rkperson.modelid as person_id, rkface.imageid as cover_image_version_uuid from rkperson inner join rkface on rkperson.representativeFaceId = rkface.modelid;
+
 * */
 
 object SqliteController{
