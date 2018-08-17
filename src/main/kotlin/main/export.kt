@@ -55,6 +55,12 @@ fun main(args: Array<String>) {
         println("INSERT INTO folders (apple_photos_uuid, name) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)});")
     }
 
+    println("\n\n--Images\n")
+    SqliteController.selectAllImages().forEach{
+        println("INSERT INTO images (apple_photos_id, apple_photos_version_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${it.versionId}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
+    }
+
+
     println("\n\n--Albums\n")
     var albums = SqliteController.selectAllAlbums()
     albums.sortBy({it.id.toInt()})
@@ -68,11 +74,6 @@ fun main(args: Array<String>) {
     people.sortBy({it.id.toInt()})
     people.forEach{
         println("INSERT INTO persons (apple_photos_id, name, cover_image_id) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${it.coverImageId!!});")
-    }
-
-    println("\n\n--Images\n")
-    SqliteController.selectAllImages().forEach{
-        println("INSERT INTO images (apple_photos_id, apple_photos_version_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${it.versionId}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
     }
 
 
