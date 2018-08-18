@@ -56,7 +56,7 @@ fun main(args: Array<String>) {
 
     println("\n\n--Images\n")
     SqliteController.selectAllImages().forEach{
-        println("INSERT INTO images (apple_photos_id, apple_photos_version_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${it.versionId}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
+        println("INSERT INTO images (apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
     }
 
     
