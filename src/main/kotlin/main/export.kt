@@ -48,8 +48,7 @@ fun main(args: Array<String>) {
         SqliteController.databaseRoot = args[0]
     }
 
-
-
+    
     println("\n\n--Folders\n")
     SqliteController.selectAllFolders().forEach{
         println("INSERT INTO folders (apple_photos_uuid, name) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)});")
@@ -83,10 +82,9 @@ fun main(args: Array<String>) {
         println("INSERT INTO person_images (person_id, image_id) VALUES (${it.personId}, ${it.imageId});")
     }
 
-
     println("\n\n--Album Images\n")
     SqliteController.selectAllAlbumImages().forEach{
-        println("INSERT INTO album_images (album_id, image_id) VALUES (${it.albumId}, ${it.imageId});")
+        println("INSERT INTO album_images (album_id, image_id, order) VALUES (${it.albumId}, ${it.imageId}, ${it.order});")
     }
 
 }
