@@ -420,36 +420,17 @@ object SqliteController{
     }
 
     fun selectAllAlbumImages(): MutableList<AlbumImage>{
-
-        val albumVersions: MutableList<AlbumVersion> = mutableListOf()
-        val versionSql = "SELECT albumId as album_id, versionId as version_id from ${ALBUM_VERSION_TABLE}"
+        val albumImages: MutableList<AlbumImage> = mutableListOf()
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${ALBUM_VERSION_TABLE}.albumId as album_id, ${ALBUM_VERSION_TABLE}.versionId as version_id, ${VERSION_TABLE}.uuid as version_uuid, ${ALBUM_TABLE}.Uuid as album_uuid, (SELECT ${CUSTOM_SORT_ORDER_TABLE}.orderNumber FROM ${CUSTOM_SORT_ORDER_TABLE} WHERE ${CUSTOM_SORT_ORDER_TABLE}.containerUuid = ${ALBUM_TABLE}.Uuid AND ${CUSTOM_SORT_ORDER_TABLE}.objectUuid = ${VERSION_TABLE}.uuid limit 1) AS sort_order FROM ${ALBUM_VERSION_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.versionid INNER JOIN ${MASTER_TABLE} ON ${MASTER_TABLE}.modelId = ${VERSION_TABLE}.masterid INNER JOIN ${ALBUM_TABLE} ON ${ALBUM_TABLE}.modelid = ${ALBUM_VERSION_TABLE}.albumid ORDER BY album_id, sort_order"
 
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
-            val stmt  = it.prepareStatement(versionSql)
+            val stmt  = it.prepareStatement(sql)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                albumVersions.add(AlbumVersion(rs.getString("album_id"), rs.getString("version_id")))
+                albumImages.add(AlbumImage(rs.getString("album_id"), rs.getString("master_id"), rs.getInt("sort_order")))
             }
         })
 
-        val albumImages: MutableList<AlbumImage> = mutableListOf()
-
-
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id FROM ${VERSION_TABLE} INNER JOIN ${MASTER_TABLE} ON master_id = ${VERSION_TABLE}.masterid WHERE version_id = ?"
-
-        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
-            val stmt  = it.prepareStatement(sql)
-
-            albumVersions.forEach {
-                stmt.setString(1, it.versionId)
-                val rs    = stmt.executeQuery()
-
-                while (rs.next()) {
-                    albumImages.add(AlbumImage(it.albumId, rs.getString("master_id")))
-                }
-            }
-
-        })
 
         return albumImages
     }
