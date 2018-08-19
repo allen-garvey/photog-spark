@@ -1,3 +1,7 @@
+/*
+* * Exports Apple Photos database in format suitable for https://github.com/allen-garvey/photog-phoenix
+* */
+
 package main
 
 import controllers.SqliteController
