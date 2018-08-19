@@ -12,6 +12,9 @@ val ALBUMS_TABLE_NAME = "albums"
 val PEOPLE_TABLE_NAME = "persons"
 val FOLDERS_TABLE_NAME = "folders"
 
+val TIMESTAMPS_COLUMN_NAMES = ",inserted_at, updated_at"
+val TIMESTAMPS_COLUMN_VALUES = ",now(), now()"
+
 
 fun sqlEscapeOptionalString(s: String?): String{
     if(s == null){
@@ -76,12 +79,12 @@ fun main(args: Array<String>) {
 
     println("\n\n--Folders\n")
     SqliteController.selectAllFolders().forEach{
-        println("INSERT INTO ${FOLDERS_TABLE_NAME} (apple_photos_uuid, name) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)});")
+        println("INSERT INTO ${FOLDERS_TABLE_NAME} (apple_photos_uuid, name ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     println("\n\n--Images\n")
     SqliteController.selectAllImages().forEach{
-        println("INSERT INTO ${IMAGES_TABLE_NAME} (apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite) VALUES (${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)});")
+        println("INSERT INTO ${IMAGES_TABLE_NAME} (apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     
@@ -89,7 +92,7 @@ fun main(args: Array<String>) {
     var albums = SqliteController.selectAllAlbums()
     albums.sortBy({it.id.toInt()})
     albums.forEach{
-        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, folder_id, folder_order, cover_image_id) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!}, ${relatedImageId(it.coverImage!!.id)});")
+        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, folder_id, folder_order, cover_image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!}, ${relatedImageId(it.coverImage!!.id)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
@@ -97,19 +100,19 @@ fun main(args: Array<String>) {
     var people = SqliteController.selectAllPeople()
     people.sortBy({it.id.toInt()})
     people.forEach{
-        println("INSERT INTO ${PEOPLE_TABLE_NAME} (apple_photos_id, name, cover_image_id) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedImageId(it.coverImageId!!)});")
+        println("INSERT INTO ${PEOPLE_TABLE_NAME} (apple_photos_id, name, cover_image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedImageId(it.coverImageId!!)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
 
     println("\n\n--Person Images\n")
     SqliteController.selectAllPersonImages().forEach{
-        println("INSERT INTO person_images (person_id, image_id) VALUES (${relatedPersonId(it.personId)}, ${relatedImageId(it.imageId)});")
+        println("INSERT INTO person_images (person_id, image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedPersonId(it.personId)}, ${relatedImageId(it.imageId)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     println("\n\n--Album Images\n")
     SqliteController.selectAllAlbumImages().forEach{
-        println("INSERT INTO album_images (album_id, image_id, order) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order});")
+        println("INSERT INTO album_images (album_id, image_id, order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 }
