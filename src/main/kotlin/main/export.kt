@@ -51,7 +51,7 @@ fun sqlOptionalInt(s: String?): String{
 //postgresql to timestamp https://www.postgresql.org/docs/8.2/static/functions-formatting.html
 fun sqlTimestamp(t: Timestamp): String{
 //    return "to_timestamp('${t.toInstant().toString()}', 'YYYY-MM-DD HH:MI:SS')"
-    return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH:MI:SS')"
+    return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH24:MI:SS')"
 }
 
 fun relatedImageId(imageId: String): String{
