@@ -112,7 +112,7 @@ fun main(args: Array<String>) {
 
     println("\n\n--Album Images\n")
     SqliteController.selectAllAlbumImages().forEach{
-        println("INSERT INTO album_images (album_id, image_id, order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO album_images (album_id, image_id, image_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 }
