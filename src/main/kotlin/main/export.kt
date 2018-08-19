@@ -5,6 +5,7 @@
 package main
 
 import controllers.SqliteController
+import models.Folder
 import java.sql.Timestamp
 
 val IMAGES_TABLE_NAME = "images"
@@ -78,7 +79,10 @@ fun main(args: Array<String>) {
 
 
     println("\n\n--Folders\n")
-    SqliteController.selectAllFolders().forEach{
+    val folders = SqliteController.selectAllFolders()
+    //have to add library folder since it is an implicit folder not contained in table
+    folders.add(Folder("LibraryFolder", "Library"))
+    folders.forEach{
         println("INSERT INTO ${FOLDERS_TABLE_NAME} (apple_photos_uuid, name ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
