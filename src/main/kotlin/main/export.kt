@@ -126,4 +126,13 @@ fun main(args: Array<String>) {
         println("INSERT INTO album_images (album_id, image_id, image_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
+
+
+    println("\n\n\n\n--Reset id sequences\n")
+
+    println("\n\n--reset imports id sequence\n")
+    println("SELECT setval('imports_id_seq', COALESCE((SELECT MAX(id)+1 FROM imports), 1), false);")
+
+
+
 }
