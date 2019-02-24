@@ -14,7 +14,8 @@ val IMPORT_ID = 1
 val IMAGES_TABLE_NAME = "images"
 val ALBUMS_TABLE_NAME = "albums"
 val PEOPLE_TABLE_NAME = "persons"
-val FOLDERS_TABLE_NAME = "folders"
+val TAGS_TABLE_NAME = "tags"
+val ALBUM_TAGS_TABLE_NAME = "album_tags"
 
 val TIMESTAMPS_COLUMN_NAMES = ",inserted_at, updated_at"
 val TIMESTAMPS_COLUMN_VALUES = ",now(), now()"
@@ -71,7 +72,7 @@ fun relatedAlbumId(albumId: String): String{
 }
 
 fun relatedFolderUuid(folderUuid: String): String{
-    return "(SELECT ${FOLDERS_TABLE_NAME}.id FROM ${FOLDERS_TABLE_NAME} WHERE ${FOLDERS_TABLE_NAME}.apple_photos_uuid = ${folderUuid} LIMIT 1)"
+    return "(SELECT ${TAGS_TABLE_NAME}.id FROM ${TAGS_TABLE_NAME} WHERE ${TAGS_TABLE_NAME}.apple_photos_uuid = ${folderUuid} LIMIT 1)"
 }
 
 
@@ -85,12 +86,12 @@ fun main(args: Array<String>) {
     println("INSERT INTO imports (id, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${IMPORT_ID}, now() ${TIMESTAMPS_COLUMN_VALUES})")
 
 
-    println("\n\n--Folders\n")
+    println("\n\n--Tags (called Folders in Apple Photos)\n")
     val folders = SqliteController.selectAllFolders()
     //have to add library folder since it is an implicit folder not contained in table
     folders.add(Folder("LibraryFolder", "Library"))
     folders.forEach{
-        println("INSERT INTO ${FOLDERS_TABLE_NAME} (apple_photos_uuid, name ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${TAGS_TABLE_NAME} (apple_photos_uuid, name ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     println("\n\n--Images\n")
@@ -103,7 +104,12 @@ fun main(args: Array<String>) {
     var albums = SqliteController.selectAllAlbums()
     albums.sortBy({it.id.toInt()})
     albums.forEach{
-        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, folder_id, folder_order, cover_image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!}, ${relatedImageId(it.coverImage!!.id)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, cover_image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedImageId(it.coverImage!!.id)} ${TIMESTAMPS_COLUMN_VALUES});")
+    }
+
+    println("\n\n--Album Tags\n")
+    albums.forEach{
+        println("INSERT INTO ${ALBUMS_TABLE_NAME} (album_id, tag_id, album_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.id)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
