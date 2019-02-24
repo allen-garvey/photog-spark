@@ -81,7 +81,7 @@ fun main(args: Array<String>) {
     }
 
     //create import resources
-    println("\n\nImports\n")
+    println("\n\n--Imports\n")
     println("INSERT INTO imports (id, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${IMPORT_ID}, now() ${TIMESTAMPS_COLUMN_VALUES})")
 
 
