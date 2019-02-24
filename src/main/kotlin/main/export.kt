@@ -87,9 +87,10 @@ fun main(args: Array<String>) {
 
 
     println("\n\n--Tags (called Folders in Apple Photos)\n")
-    val folders = SqliteController.selectAllFolders()
+    var folders = SqliteController.selectAllFolders()
     //have to add library folder since it is an implicit folder not contained in table
     folders.add(Folder("LibraryFolder", "Library"))
+    folders.reverse()
     folders.forEach{
         println("INSERT INTO ${TAGS_TABLE_NAME} (apple_photos_uuid, name ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${sqlEscapeString(it.uuid)}, ${sqlEscapeString(it.name)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
