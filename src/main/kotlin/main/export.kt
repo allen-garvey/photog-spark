@@ -109,7 +109,7 @@ fun main(args: Array<String>) {
 
     println("\n\n--Album Tags\n")
     albums.forEach{
-        println("INSERT INTO ${ALBUMS_TABLE_NAME} (album_id, tag_id, album_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.id)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${ALBUM_TAGS_TABLE_NAME} (album_id, tag_id, album_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.id)}, ${relatedFolderUuid(sqlEscapeString(it.folderUuid))}, ${it.folderOrder!!} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
