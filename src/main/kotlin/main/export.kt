@@ -8,6 +8,9 @@ import controllers.SqliteController
 import models.Folder
 import java.sql.Timestamp
 
+//change import id if there are already imports resources in database
+val IMPORT_ID = 1
+
 val IMAGES_TABLE_NAME = "images"
 val ALBUMS_TABLE_NAME = "albums"
 val PEOPLE_TABLE_NAME = "persons"
@@ -77,6 +80,10 @@ fun main(args: Array<String>) {
         SqliteController.databaseRoot = args[0]
     }
 
+    //create import resources
+    println("\n\nImports\n")
+    println("INSERT INTO imports (id, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${IMPORT_ID}, now() ${TIMESTAMPS_COLUMN_VALUES})")
+
 
     println("\n\n--Folders\n")
     val folders = SqliteController.selectAllFolders()
@@ -88,7 +95,7 @@ fun main(args: Array<String>) {
 
     println("\n\n--Images\n")
     SqliteController.selectAllImages().forEach{
-        println("INSERT INTO ${IMAGES_TABLE_NAME} (apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${IMAGES_TABLE_NAME} (import_id, apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${IMPORT_ID}, ${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     
