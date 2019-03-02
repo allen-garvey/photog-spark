@@ -51,6 +51,7 @@ object SqliteController{
     var FACE_TABLE = "RKFace"
     val PERSON_VERSION_TABLE = "RKPersonVersion"
     val CUSTOM_SORT_ORDER_TABLE = "RKCustomSortOrder"
+    val IMPORT_TABLE = "RKImportGroup"
 
     val DATABASE_FOLDER = "data"
     val DATABASE_FILENAME_LIBRARY = "Library.apdb"
@@ -106,7 +107,7 @@ object SqliteController{
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null), rs.getInt("folder_order")))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null, importUuid = null), rs.getInt("folder_order")))
             }
         })
 
@@ -154,7 +155,7 @@ object SqliteController{
             stmt.setString(2, albumId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite")))
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"), importUuid = null))
             }
         })
 
@@ -189,7 +190,7 @@ object SqliteController{
             stmt.setString(1, imageId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"))
+                image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"), importUuid = null)
 
             }
         })
@@ -202,13 +203,13 @@ object SqliteController{
 
     fun selectAllImages(): MutableList<Image>{
         val images : MutableList<Image> = mutableListOf()
-        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId ORDER BY master_id"
+        val sql = "SELECT ${MASTER_TABLE}.modelId as master_id, ${VERSION_TABLE}.modelid as version_id, ${MASTER_TABLE}.importGroupUuid as import_uuid, ${VERSION_TABLE}.isFavorite as is_favorite, ${MASTER_TABLE}.imagepath as master_imagepath, strftime('%s', datetime(${MASTER_TABLE}.imagedate, 'unixepoch', '+372 months', ${MASTER_TABLE}.imageTimeZoneOffsetSeconds || ' seconds')) AS master_timestamp FROM ${MASTER_TABLE} INNER JOIN ${VERSION_TABLE} ON ${VERSION_TABLE}.masterId = ${MASTER_TABLE}.modelId ORDER BY master_id"
 
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                val image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"))
+                val image = Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"), rs.getString("import_uuid"))
 
                 image.thumbnail = thumbnailForImage(image)
                 images.add(image)
@@ -275,7 +276,7 @@ object SqliteController{
             val rs    = stmt.executeQuery()
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), folderUuid, Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null)))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), folderUuid, Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null, importUuid = null)))
             }
         })
 
@@ -373,7 +374,7 @@ object SqliteController{
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite")))
+                images.add(Image(rs.getString("master_id"), rs.getString("version_id"), rs.getString("master_imagepath"), Timestamp(rs.getString("master_timestamp").toLong() * 1000), null, rs.getBoolean("is_favorite"), importUuid = null))
             }
         })
 
@@ -433,5 +434,24 @@ object SqliteController{
 
 
         return albumImages
+    }
+
+    fun selectAllImports(): MutableList<Import>{
+        val imports : MutableList<Import> = mutableListOf()
+        val sql = "SELECT ${IMPORT_TABLE}.uuid as import_uuid, ${IMPORT_TABLE}.importYear as import_year, ${IMPORT_TABLE}.importMonth as import_month, ${IMPORT_TABLE}.importDay as import_day, ${IMPORT_TABLE}.importTime as import_time FROM ${IMPORT_TABLE} ORDER BY ${IMPORT_TABLE}.modelId"
+
+        println(sql)
+
+        executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
+            val stmt  = it.prepareStatement(sql)
+            val rs    = stmt.executeQuery()
+            while (rs.next()) {
+                val import = Import(rs.getString("import_uuid"), rs.getString("import_year"), rs.getString("import_month"), rs.getString("import_day"), rs.getString("import_time"))
+
+                imports.add(import)
+            }
+        })
+
+        return imports
     }
 }
