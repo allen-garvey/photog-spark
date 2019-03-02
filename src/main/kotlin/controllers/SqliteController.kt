@@ -440,8 +440,6 @@ object SqliteController{
         val imports : MutableList<Import> = mutableListOf()
         val sql = "SELECT ${IMPORT_TABLE}.uuid as import_uuid, ${IMPORT_TABLE}.importDate as import_timestamp FROM ${IMPORT_TABLE} ORDER BY ${IMPORT_TABLE}.modelId"
 
-        println(sql)
-
         executeOperation(DATABASE_FILENAME_LIBRARY,{ it ->
             val stmt  = it.prepareStatement(sql)
             val rs    = stmt.executeQuery()
