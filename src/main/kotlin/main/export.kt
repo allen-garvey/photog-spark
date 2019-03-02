@@ -6,16 +6,15 @@ package main
 
 import controllers.SqliteController
 import models.Folder
+import models.Import
 import java.sql.Timestamp
-
-//change import id if there are already imports resources in database
-val IMPORT_ID = 1
 
 val IMAGES_TABLE_NAME = "images"
 val ALBUMS_TABLE_NAME = "albums"
 val PEOPLE_TABLE_NAME = "persons"
 val TAGS_TABLE_NAME = "tags"
 val ALBUM_TAGS_TABLE_NAME = "album_tags"
+val IMPORTS_TABLE_NAME = "imports"
 
 val TIMESTAMPS_COLUMN_NAMES = ",inserted_at, updated_at"
 val TIMESTAMPS_COLUMN_VALUES = ",now(), now()"
@@ -59,6 +58,10 @@ fun sqlTimestamp(t: Timestamp): String{
     return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH24:MI:SS')"
 }
 
+fun importTimestamp(import: Import): String{
+    return "to_timestamp('${import.year}-${import.month}-${import.day} ${import.time.substring(0, 2)}:${import.time.substring(2, 4)}:${import.time.substring(4, 6)}', 'YYYY-MM-DD HH24:MI:SS')"
+}
+
 fun relatedImageId(imageId: String): String{
     return "(SELECT ${IMAGES_TABLE_NAME}.id FROM ${IMAGES_TABLE_NAME} WHERE ${IMAGES_TABLE_NAME}.apple_photos_id = ${imageId} LIMIT 1)"
 }
@@ -75,6 +78,10 @@ fun relatedFolderUuid(folderUuid: String): String{
     return "(SELECT ${TAGS_TABLE_NAME}.id FROM ${TAGS_TABLE_NAME} WHERE ${TAGS_TABLE_NAME}.apple_photos_uuid = ${folderUuid} LIMIT 1)"
 }
 
+fun relatedImportUuid(importUuid: String): String{
+    return "(SELECT ${IMPORTS_TABLE_NAME}.id FROM ${IMPORTS_TABLE_NAME} WHERE ${IMPORTS_TABLE_NAME}.apple_photos_uuid = ${importUuid} LIMIT 1)"
+}
+
 
 fun main(args: Array<String>) {
     if(args.size >= 1){
@@ -83,7 +90,10 @@ fun main(args: Array<String>) {
 
     //create import resources
     println("\n\n--Imports\n")
-    println("INSERT INTO imports (id, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${IMPORT_ID}, now() ${TIMESTAMPS_COLUMN_VALUES});")
+    val imports = SqliteController.selectAllImports()
+    imports.forEach {
+        println("INSERT INTO ${IMPORTS_TABLE_NAME} (apple_photos_uuid, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${it.uuid}, ${importTimestamp(it)} ${TIMESTAMPS_COLUMN_VALUES});")
+    }
 
 
     println("\n\n--Tags (called Folders in Apple Photos)\n")
@@ -97,7 +107,7 @@ fun main(args: Array<String>) {
 
     println("\n\n--Images\n")
     SqliteController.selectAllImages().forEach{
-        println("INSERT INTO ${IMAGES_TABLE_NAME} (import_id, apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${IMPORT_ID}, ${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${IMAGES_TABLE_NAME} (import_id, apple_photos_id, creation_time, master_path, thumbnail_path, mini_thumbnail_path, is_favorite ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedImportUuid(it.importUuid!!)}, ${it.id}, ${sqlTimestamp(it.creation!!)}, ${sqlEscapeString(it.path)}, ${sqlEscapeString(it.thumbnail!!.thumbnailPath)}, ${sqlEscapeString(it.thumbnail!!.miniThumbnailPath)}, ${sqlBool(it.isFavorite)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     
