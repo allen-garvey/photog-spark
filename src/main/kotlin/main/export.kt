@@ -88,7 +88,7 @@ fun main(args: Array<String>) {
     println("\n\n--Imports\n")
     val imports = SqliteController.selectAllImports()
     imports.forEach {
-        println("INSERT INTO ${IMPORTS_TABLE_NAME} (apple_photos_uuid, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${it.uuid}, ${sqlTimestamp(it.timestamp)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${IMPORTS_TABLE_NAME} (apple_photos_uuid, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${sqlEscapeString(it.uuid)}, ${sqlTimestamp(it.timestamp)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
