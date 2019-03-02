@@ -58,10 +58,6 @@ fun sqlTimestamp(t: Timestamp): String{
     return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH24:MI:SS')"
 }
 
-fun importTimestamp(import: Import): String{
-    return "to_timestamp('${import.year}-${import.month}-${import.day} ${import.time.substring(0, 2)}:${import.time.substring(2, 4)}:${import.time.substring(4, 6)}', 'YYYY-MM-DD HH24:MI:SS')"
-}
-
 fun relatedImageId(imageId: String): String{
     return "(SELECT ${IMAGES_TABLE_NAME}.id FROM ${IMAGES_TABLE_NAME} WHERE ${IMAGES_TABLE_NAME}.apple_photos_id = ${imageId} LIMIT 1)"
 }
@@ -92,7 +88,7 @@ fun main(args: Array<String>) {
     println("\n\n--Imports\n")
     val imports = SqliteController.selectAllImports()
     imports.forEach {
-        println("INSERT INTO ${IMPORTS_TABLE_NAME} (apple_photos_uuid, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${it.uuid}, ${importTimestamp(it)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${IMPORTS_TABLE_NAME} (apple_photos_uuid, import_time ${TIMESTAMPS_COLUMN_NAMES} ) VALUES (${it.uuid}, ${sqlTimestamp(it.timestamp)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
 
@@ -142,10 +138,5 @@ fun main(args: Array<String>) {
     SqliteController.selectAllAlbumImages().forEach{
         println("INSERT INTO album_images (album_id, image_id, image_order ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${relatedAlbumId(it.albumId)}, ${relatedImageId(it.imageId)}, ${it.order} ${TIMESTAMPS_COLUMN_VALUES});")
     }
-
-
-
-
-
 
 }

@@ -438,7 +438,7 @@ object SqliteController{
 
     fun selectAllImports(): MutableList<Import>{
         val imports : MutableList<Import> = mutableListOf()
-        val sql = "SELECT ${IMPORT_TABLE}.uuid as import_uuid, ${IMPORT_TABLE}.importYear as import_year, ${IMPORT_TABLE}.importMonth as import_month, ${IMPORT_TABLE}.importDay as import_day, ${IMPORT_TABLE}.importTime as import_time FROM ${IMPORT_TABLE} ORDER BY ${IMPORT_TABLE}.modelId"
+        val sql = "SELECT ${IMPORT_TABLE}.uuid as import_uuid, ${IMPORT_TABLE}.importDate as import_timestamp FROM ${IMPORT_TABLE} ORDER BY ${IMPORT_TABLE}.modelId"
 
         println(sql)
 
@@ -446,7 +446,12 @@ object SqliteController{
             val stmt  = it.prepareStatement(sql)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                val import = Import(rs.getString("import_uuid"), rs.getString("import_year"), rs.getString("import_month"), rs.getString("import_day"), rs.getString("import_time"))
+                val rawTimestamp = rs.getLong("import_timestamp") * 1000
+                //milliseconds since unix epoch for 2001-01-01 00:00:00 EST time, when timestamps start
+                val timestampOffset = 978307200000
+                val importTimestamp = Timestamp(rawTimestamp + timestampOffset)
+
+                val import = Import(rs.getString("import_uuid"), importTimestamp)
 
                 imports.add(import)
             }
