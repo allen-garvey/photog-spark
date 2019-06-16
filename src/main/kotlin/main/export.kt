@@ -58,6 +58,10 @@ fun sqlTimestamp(t: Timestamp): String{
     return "to_timestamp('${t.toString().replace(Regex("\\.0$"), "")}', 'YYYY-MM-DD HH24:MI:SS')"
 }
 
+fun sqlDate(t: Timestamp): String{
+    return "to_date('${t.toString().replace(Regex(" .*$"), "")}', 'YYYY-MM-DD')"
+}
+
 fun relatedImageId(imageId: String): String{
     return "(SELECT ${IMAGES_TABLE_NAME}.id FROM ${IMAGES_TABLE_NAME} WHERE ${IMAGES_TABLE_NAME}.apple_photos_id = ${imageId} LIMIT 1)"
 }
@@ -111,7 +115,7 @@ fun main(args: Array<String>) {
     var albums = SqliteController.selectAllAlbums()
     albums.sortBy({it.id.toInt()})
     albums.forEach{
-        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, cover_image_id ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedImageId(it.coverImage!!.id)} ${TIMESTAMPS_COLUMN_VALUES});")
+        println("INSERT INTO ${ALBUMS_TABLE_NAME} (apple_photos_id, name, cover_image_id, creation_date ${TIMESTAMPS_COLUMN_NAMES}) VALUES (${it.id}, ${sqlEscapeString(it.name)}, ${relatedImageId(it.coverImage!!.id)}, ${sqlDate(it.creation!!)} ${TIMESTAMPS_COLUMN_VALUES});")
     }
 
     println("\n\n--Album Tags\n")

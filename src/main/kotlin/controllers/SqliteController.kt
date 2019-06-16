@@ -100,14 +100,26 @@ object SqliteController{
 
     fun selectAllAlbums() : MutableList<Album> {
         val albums : MutableList<Album> = mutableListOf()
-        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid,  ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path, (SELECT ${CUSTOM_SORT_ORDER_TABLE}.orderNumber FROM ${CUSTOM_SORT_ORDER_TABLE} WHERE ${CUSTOM_SORT_ORDER_TABLE}.containerUuid = ${ALBUM_TABLE}.folderUuid AND ${CUSTOM_SORT_ORDER_TABLE}.objectUuid = ${ALBUM_TABLE}.uuid limit 1) AS folder_order FROM ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
+        val sql = "select ${ALBUM_TABLE}.modelId as album_id, ${ALBUM_TABLE}.name as album_name, ${ALBUM_TABLE}.folderUuid as album_folder_uuid,  ${MASTER_TABLE}.modelid as coverimage_id, ${VERSION_TABLE}.modelid as coverimage_version_id, ${MASTER_TABLE}.imagepath as coverimage_path, (SELECT ${CUSTOM_SORT_ORDER_TABLE}.orderNumber FROM ${CUSTOM_SORT_ORDER_TABLE} WHERE ${CUSTOM_SORT_ORDER_TABLE}.containerUuid = ${ALBUM_TABLE}.folderUuid AND ${CUSTOM_SORT_ORDER_TABLE}.objectUuid = ${ALBUM_TABLE}.uuid limit 1) AS folder_order, strftime('%s', datetime(${ALBUM_TABLE}.createdate, 'unixepoch', '+372 months')) AS album_timestamp FROM ${ALBUM_TABLE} inner join ${VERSION_TABLE} on ${ALBUM_TABLE}.posterversionuuid = ${VERSION_TABLE}.uuid inner join ${MASTER_TABLE} on ${VERSION_TABLE}.masterid = ${MASTER_TABLE}.modelId where ${ALBUM_TABLE}.name is not null and ${ALBUM_TABLE}.name != \"\" order by ${ALBUM_TABLE}.modelId desc"
 
         executeOperation(DATABASE_FILENAME_LIBRARY, { it ->
             val stmt  = it.createStatement()
             val rs    = stmt.executeQuery(sql)
 
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), Image(rs.getString("coverimage_id"), rs.getString("coverimage_version_id"), rs.getString("coverimage_path"), null, null, importUuid = null), rs.getInt("folder_order")))
+                albums.add(
+                        Album(
+                                rs.getString("album_id"),
+                                rs.getString("album_name"),
+                                rs.getString("album_folder_uuid"),
+                                Image(
+                                        rs.getString("coverimage_id"),
+                                        rs.getString("coverimage_version_id"),
+                                        rs.getString("coverimage_path"), null, null, importUuid = null),
+                                rs.getInt("folder_order"),
+                                Timestamp(rs.getString("album_timestamp").toLong() * 1000)
+                        )
+                )
             }
         })
 
@@ -228,7 +240,7 @@ object SqliteController{
             stmt.setString(1, imageId)
             val rs    = stmt.executeQuery()
             while (rs.next()) {
-                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), null))
+                albums.add(Album(rs.getString("album_id"), rs.getString("album_name"), rs.getString("album_folder_uuid"), null, null, null))
             }
         })
 
